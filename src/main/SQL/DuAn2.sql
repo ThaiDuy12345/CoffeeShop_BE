@@ -1,5 +1,9 @@
-﻿-- create database	DuAn2;
--- go
+﻿use master;
+go
+drop database DuAn2;
+go
+create database	DuAn2;
+go
 use DuAn2;
 go
 Create table Account
@@ -10,7 +14,8 @@ Create table Account
 	Address			nvarchar(255)	null				CHECK (LEN(Address) <= 255),
 	Phone			varchar(13)		null				unique,
 	Email			varchar(50)		not null			unique			CHECK (Email like '%_@_%._%'),
-	Role			bit				not null			default(1)
+	Role			bit				not null			default(1),
+	Active			bit				not null			default(1)
 );
 go
 Create table [Order]
@@ -18,26 +23,40 @@ Create table [Order]
 	Order_ID		int				identity(1,1)		primary key,
 	Order_Status	int				not null			default(0),
 	Order_Date		datetime2		not null,
+	shipping_Fee	decimal(18,2)	not null			default(20000),
+	discount		decimal(18,2)	not null			default(0),
 	Total_Price		decimal(18, 2)	not null,
 	AccountOrder_ID	int				references [Account](Account_ID)
 );
 go
-Create table [Category]
+CREATE TABLE [Category]
 (
-	Category_ID		int				identity(1,1)		primary key,
-	Category_Name	nvarchar(50)	not null
+    Category_ID     int             identity(1,1)      primary key,
+    Category_Name   nvarchar(50)    not null
 );
-go
-Create table [Products]
+GO
+
+Create table [Product]
 (
 	Product_ID		int				identity(1,1)		primary key,
 	Product_image	varchar(255)	not null,
 	Product_Name	nvarchar(50)	not null,
 	Product_Price	decimal(18, 2)	not null,
 	Product_Description		nvarchar(255)				not null,
+	Product_quantity		int		not null			default(-1),
+	isPopular				bit		not null			default(0),
+	Product_Active			bit		not null			default(1),
+	Product_Creation_Date	datetime2	not null,
 	ProductCategory_ID		int,
 	FOREIGN KEY (ProductCategory_ID) REFERENCES [Category](Category_ID)
 );
+go
+Create table	Favorite_Product
+(
+	Favorite_Product_ID		int				identity(1,1)		primary key,
+	FK_accountID			int				REFERENCES	[Account](Account_ID),	
+	FK_ProductID			int				REFERENCES	[Product](Product_ID)
+)
 go
 Create table [Detail_Order]
 (
@@ -45,7 +64,7 @@ Create table [Detail_Order]
 	Quantity			int				not null			default(1),
 	Sub_Total			decimal(18, 2)	not null,
 	FK_Order_ID			int				REFERENCES [Order](Order_ID), 
-	FK_Product_ID		int				REFERENCES [Products](Product_ID)
+	FK_Product_ID		int				REFERENCES [Product](Product_ID)
 );
 GO
 Create table FeedBack
@@ -54,57 +73,66 @@ Create table FeedBack
 	Rate			int				not null,
 	Comment nvarchar(255)			not null			CHECK (LEN(Comment) <= 255),
 	Creation_Date	datetime2		not null,
-	FeedBack_Product_ID				int					REFERENCES Products(Product_ID), 
+	Active			bit				not null			default(1),
+	FeedBack_Product_ID				int					REFERENCES Product(Product_ID), 
 	FeedBack_Account_ID				int					REFERENCES Account(Account_ID)
 );
 go
+
+INSERT INTO Account (Name, Password, Address, Phone, Email, Role, Active)
+VALUES
+    ('John Doe', 'password1', '123 Main Street, New York', '123-456-7890', 'john@example.com', 0, 1),
+    ('Jane Smith', 'password2', '456 Elm Street, Los Angeles', '987-654-3210', 'jane@example.com', 1, 1),
+    ('Michael Johnson', 'password3', '789 Oak Avenue, Chicago', '555-123-4567', 'michael@example.com', 0, 1),
+    ('Emily Davis', 'password4', '101 Pine Road, San Francisco', '777-888-9999', 'emily@example.com', 1, 1),
+    ('William Brown', 'password5', '555 Maple Lane, Boston', '222-333-4444', 'william@example.com', 0, 1),
+    ('Sophia Wilson', 'password6', '222 Cedar Street, Miami', '999-000-1111', 'sophia@example.com', 1, 1),
+    ('Ethan Lee', 'password7', '777 Birch Avenue, Seattle', '111-222-3333', 'ethan@example.com', 0, 1),
+    ('Olivia White', 'password8', '333 Redwood Road, Denver', '444-555-6666', 'olivia@example.com', 1, 1),
+    ('James Martinez', 'password9', '888 Willow Lane, Atlanta', '777-666-5555', 'james@example.com', 0, 1),
+    ('Ava Adams', 'password10', '444 Sycamore Drive, Dallas', '222-111-0000', 'ava@example.com', 1, 1);
+
+	go
 -- Thêm dữ liệu vào bảng Category
 INSERT INTO [Category] (Category_Name)
 VALUES ('tea'), ('coffee'), ('food'), ('package');
 	go
--- Thêm dữ liệu vào bảng Account
-INSERT INTO Account (Name, Password, Address, Phone, Email, Role)
-VALUES 
-    ('John Doe', 'password123', '123 Main St', '1234567890', 'john@example.com', 1),
-    ('Alice Smith', 'securepass', '456 Elm St', '9876543210', 'alice@example.com', 0),
-    ('Bob Johnson', 'mypass', '789 Oak St', '5551234567', 'bob@example.com', 1);
-    -- ...Thêm 7 dòng dữ liệu khác...
-		go
--- Thêm dữ liệu vào bảng [Products]
-INSERT INTO [Products] (Product_image, Product_Name, Product_Price, Product_Description, ProductCategory_ID)
-VALUES 
-    ('product1.jpg', 'Product A', 10.00, 'Description A', 1),
-    ('product2.jpg', 'Product B', 15.00, 'Description B', 2),
-    ('product3.jpg', 'Product C', 25.00, 'Description C', 3);
-    -- ...Thêm 7 dòng dữ liệu khác...
-		go
--- Thêm dữ liệu vào bảng [Order]
-INSERT INTO [Order] (Order_Status, Order_Date, Total_Price, AccountOrder_ID)
-VALUES 
-    (0, GETDATE(), 25.00, 1),
-    (1, GETDATE(), 35.00, 2),
-    (0, GETDATE(), 50.00, 3);
-    -- ...Thêm 7 dòng dữ liệu khác...
-		go
--- Thêm dữ liệu vào bảng [Detail_Order]
-INSERT INTO [Detail_Order] (Quantity, Sub_Total, FK_Order_ID, FK_Product_ID)
-VALUES 
-    (2, 20.00, 1, 1),
-    (1, 15.00, 2, 2),
-    (3, 40.00, 3, 3);
-    -- ...Thêm 7 dòng dữ liệu khác...
-	go
--- Thêm dữ liệu vào bảng FeedBack
-INSERT INTO FeedBack (Rate, Comment, Creation_Date, FeedBack_Product_ID, FeedBack_Account_ID)
-VALUES 
-    (5, 'Great product!', GETDATE(), 1, 1),
-    (3, 'Could be better', GETDATE(), 2, 2),
-    (4, 'Nice service', GETDATE(), 3, 3);
-    -- ...Thêm 7 dòng dữ liệu khác...
+	-- Thêm 20 dữ liệu vào bảng Product với dữ liệu mẫu
+INSERT INTO Product (Product_image, Product_Name, Product_Price, Product_Description, Product_quantity, isPopular, Product_Active, Product_Creation_Date, ProductCategory_ID)
+VALUES
+    ('product1.jpg', 'Green Tea', 5.99, 'A pack of green tea', 100, 1, 1, GETDATE(), 1),
+    ('product2.jpg', 'Black Coffee', 4.99, 'A cup of black coffee', 200, 0, 1, GETDATE(), 2),
+    ('product3.jpg', 'Biscuits', 2.49, 'A pack of biscuits', 150, 1, 1, GETDATE(), 3),
+    ('product4.jpg', 'Earl Grey Tea', 6.99, 'A pack of Earl Grey tea', 80, 1, 1, GETDATE(), 1),
+    ('product5.jpg', 'Cappuccino', 5.49, 'A cup of cappuccino', 180, 0, 1, GETDATE(), 2),
+    ('product6.jpg', 'Chocolate Chip Cookies', 3.99, 'A pack of cookies', 120, 1, 1, GETDATE(), 3),
+    ('product7.jpg', 'Chamomile Tea', 6.49, 'A pack of chamomile tea', 90, 1, 1, GETDATE(), 1),
+    ('product8.jpg', 'Latte', 4.79, 'A cup of latte', 160, 0, 1, GETDATE(), 2),
+    ('product9.jpg', 'Oatmeal Cookies', 3.49, 'A pack of oatmeal cookies', 130, 1, 1, GETDATE(), 3),
+    ('product10.jpg', 'Hibiscus Tea', 6.79, 'A pack of hibiscus tea', 70, 1, 1, GETDATE(), 1),
+    ('product11.jpg', 'Espresso', 4.29, 'A cup of espresso', 140, 0, 1, GETDATE(), 2),
+    ('product12.jpg', 'Snickerdoodle Cookies', 3.69, 'A pack of snickerdoodle cookies', 110, 1, 1, GETDATE(), 3),
+    ('product13.jpg', 'Peppermint Tea', 6.99, 'A pack of peppermint tea', 60, 1, 1, GETDATE(), 1),
+    ('product14.jpg', 'Mocha', 5.69, 'A cup of mocha', 120, 0, 1, GETDATE(), 2),
+    ('product15.jpg', 'Peanut Butter Cookies', 3.49, 'A pack of peanut butter cookies', 100, 1, 1, GETDATE(), 3),
+    ('product16.jpg', 'Chai Tea', 7.29, 'A pack of chai tea', 50, 1, 1, GETDATE(), 1),
+    ('product17.jpg', 'Iced Coffee', 4.99, 'A cup of iced coffee', 110, 0, 1, GETDATE(), 2),
+    ('product18.jpg', 'Shortbread Cookies', 3.99, 'A pack of shortbread cookies', 90, 1, 1, GETDATE(), 3),
+    ('product19.jpg', 'Ginger Tea', 7.49, 'A pack of ginger tea', 40, 1, 1, GETDATE(), 1),
+    ('product20.jpg', 'Caramel Macchiato', 5.99, 'A cup of caramel macchiato', 100, 0, 1, GETDATE(), 2);
+go
+
+INSERT INTO Favorite_Product (FK_accountID, FK_ProductID)
+VALUES
+    (1, 1),
+    (1, 2),
+    (2, 3),
+    (3, 4),
+    (4, 5);
 go
 select * from Account
 select * from [Order]
 select * from [Category]
-select * from [Products]
+select * from [Product]
 select * from [Detail_Order]
 select * from FeedBack

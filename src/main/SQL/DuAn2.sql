@@ -78,7 +78,13 @@ Create table FeedBack
 	FeedBack_Account_ID				int					REFERENCES Account(Account_ID)
 );
 go
-
+CREATE TABLE VerificationCode (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    email NVARCHAR(255) NOT NULL,
+    code NVARCHAR(255) NOT NULL,
+    expiration_date DATETIME NOT NULL
+)
+go
 INSERT INTO Account (Name, Password, Address, Phone, Email, Role, Active)
 VALUES
     ('John Doe', 'password1', '123 Main Street, New York', '123-456-7890', 'john@example.com', 0, 1),
@@ -131,8 +137,16 @@ VALUES
     (4, 5);
 go
 select * from Account
+go
 select * from [Order]
+go
 select * from [Category]
+go
 select * from [Product]
+go
+select * from Favorite_Product
+go
 select * from [Detail_Order]
+go
 select * from FeedBack
+go

@@ -1,4 +1,7 @@
 package com.duan.Entity;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,8 +15,8 @@ import lombok.Data;
 @Table(name = "Account")
 @Data
 public class AccountEntity {
-	@Id
-	 
+	
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Account_ID")
     private int accountId;
@@ -21,7 +24,7 @@ public class AccountEntity {
     @Column(name = "Name", nullable = false, length = 50)
     private String name;
 
-    @Column(name = "Password", nullable = false)
+    @Column(name = "Password", nullable = false, length = 50)
     private String password;
 
     @Column(name = "Address", length = 255)
@@ -30,9 +33,20 @@ public class AccountEntity {
     @Column(name = "Phone", length = 13, unique = true)
     private String phone;
 
-    @Column(name = "Email", nullable = false, unique = true)
+    @Column(name = "Email", nullable = false, length = 50, unique = true)
     private String email;
 
     @Column(name = "Role", nullable = false)
     private boolean role;
+
+    @Column(name = "token", length = 255)
+    private String token;
+
+    @Column(columnDefinition = "TIMESTAMP")
+	private LocalDateTime tokenCreationDate;
+
+    @Column(name = "Active", nullable = false)
+    private boolean active;
+
+    
 }

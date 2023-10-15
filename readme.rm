@@ -1,0 +1,21 @@
+# Trước khi chạy dự án: Uncomment và comment các biến trong file application.properties tương ứng vs việc chạy local
+và development
+# Local
+  + Chạy bằng IDE
+    - Khuyến khích sử dụng các IDE như Spring Tool Suite, Eclipse hoặc Intelij để chạy
+  + Chạy bằng Maven command line
+    - Download Apache Maven tại: https://maven.apache.org/download.cgi
+    - Cài biến Maven vào Window Enviroment Variables và bỏ vào biến PATH ( ví dụ: M2_HOME: C:\maven\apache-maven-3.9.4 )
+    - Khởi động lại máy, mở CMD lên và chạy lệnh: mvn -v
+    - Nếu hiện thị phiên bản của Aphache Maven chứng tỏ đã cài thành công
+    - Vào Project và chạy lệnh mvn spring-boot:run để chạy 
+# Development
+  - mvn clean package
+  - docker build -t coffee-shop-app .
+  - docker run -p 8080:8080 --name=coffee-shop-app coffee-shop-app 
+
+
+
+      
+
+

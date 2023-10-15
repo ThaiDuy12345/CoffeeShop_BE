@@ -1,6 +1,6 @@
 FROM eclipse-temurin:20
 RUN mkdir /coffee-app
-COPY ./target/Main_CoffeeShop-0.0.1-SNAPSHOT.jar /coffee-app/app.jar
+COPY target/Main_CoffeeShop-0.0.1-SNAPSHOT.jar /coffee-app/app.jar
 WORKDIR /coffee-app
 EXPOSE 8080
 CMD ["java", "-jar", "app.jar"]

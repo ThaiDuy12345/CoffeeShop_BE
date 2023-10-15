@@ -1,4 +1,13 @@
 HELP.md
+
+target/classes
+target/test-classes
+target/generated-test-sources
+target/maven-achiver
+target/maven-status
+target/sunfire-reports
+target/classes
+
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/

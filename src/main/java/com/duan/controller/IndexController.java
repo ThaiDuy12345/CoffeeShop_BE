@@ -15,7 +15,7 @@ public class IndexController {
   public ResponseEntity<Map<String, Object>> getServerStatus(){
     Map<String, Object> response = new HashMap<>();
     response.put("status", "true");
-    response.put("message", "Server is working at port 8080!!");
+    response.put("message", "SpringBoot Server is working!!");
     return ResponseEntity.ok(response);
   }
 }

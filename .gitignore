@@ -4,9 +4,9 @@ target/classes/
 target/test-classes/
 target/generated-test-sources/
 target/generated-sources/
-target/maven-achiver/
+target/maven-archiver/
 target/maven-status/
-target/sunfire-reports/
+target/surefire-reports/
 target/classes/
 target/com/duan/
 

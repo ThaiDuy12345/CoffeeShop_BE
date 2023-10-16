@@ -45,7 +45,7 @@ public class AccountController {
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody AccountEntity account) {
-    	if (accountRepository.existsByPhone(account.getAccountPhone())) {
+    	if (accountRepository.existsByAccountPhone(account.getAccountPhone())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Phone already exists");
         }
         // Insert new user into the database
@@ -89,7 +89,7 @@ public class AccountController {
     }
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody AccountEntity account) {
-        AccountEntity foundAccount = accountRepository.findByEmailAndPassword(account.getAccountEmail(), account.getAccountPassword());
+        AccountEntity foundAccount = accountRepository.findByAccountEmailAndAccountPassword(account.getAccountEmail(), account.getAccountPassword());
 
         if (foundAccount == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");

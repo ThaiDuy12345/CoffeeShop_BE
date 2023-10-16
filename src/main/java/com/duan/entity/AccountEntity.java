@@ -58,6 +58,8 @@ public class AccountEntity implements Serializable{
 		this.accountActive = accountActive;
 	}
 
+	public AccountEntity(){}
+
 	public String getAccountPhone() {
 		return accountPhone;
 	}

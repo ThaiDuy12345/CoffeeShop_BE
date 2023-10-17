@@ -6,5 +6,5 @@ import com.duan.entity.AccountEntity;
 
 public interface AccountRepository extends JpaRepository<AccountEntity, String>{
 	AccountEntity findByEmailAndPassword(String accountEmail, String accountPassword);
-	boolean existsByPhone(String accountPhone);
+	AccountEntity getOne(int accountPhone);
 }

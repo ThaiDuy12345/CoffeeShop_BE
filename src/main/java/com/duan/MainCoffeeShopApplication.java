@@ -7,7 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class MainCoffeeShopApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(MainCoffeeShopApplication.class, args);
+		SpringApplication app = new SpringApplication(MainCoffeeShopApplication.class);
+		app.setRegisterShutdownHook(false);  // Ngưng Spring Boot tự tắt khi không kết nối được SQL
+		app.run(args);
 	}
 
 }

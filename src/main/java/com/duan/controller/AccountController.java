@@ -1,6 +1,8 @@
 package com.duan.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,37 +31,55 @@ public class AccountController {
     }
  // GET /accounts
     @GetMapping
-    public List<AccountEntity> getAllAccounts() {
-        return accountRepository.findAll();
+    public ResponseEntity<Map<String, Object>> getAllAccounts() {
+        Map<String, Object> res = new HashMap<>();
+        res.put("status", true);
+        res.put("data", accountRepository.findAll());
+        return ResponseEntity.ok(res);
     }
  // GET /accounts/{phone}
     @GetMapping("/{phone}")
-    public ResponseEntity<AccountEntity> getAccountByPhone(@PathVariable String phone) {
+    public ResponseEntity<Map<String, Object>> getAccountByPhone(@PathVariable String phone) {
+        Map<String, Object> res = new HashMap<>();
         Optional<AccountEntity> optionalAccount = accountRepository.findById(phone);
         if (optionalAccount.isPresent()) {
-            return ResponseEntity.ok(optionalAccount.get());
+            res.put("status", true);
+            res.put("data", optionalAccount.get());
+            return ResponseEntity.ok(res);
         } else {
-            return ResponseEntity.notFound().build();
+            res.put("status", false);
+            res.put("message", "Tài khoản không tồn tại");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
         }
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody AccountEntity account) {
-    	if (accountRepository.existsByAccountPhone(account.getAccountPhone())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Phone already exists");
+    public ResponseEntity<Map<String, Object>> register(@RequestBody AccountEntity account) {
+        Map<String, Object> res = new HashMap<>();
+    	if (accountRepository.existsByAccountPhone(account.getAccountPhone()) || accountRepository.existsByAccountEmail(account.getAccountEmail())) {
+            res.put("status", false);
+            res.put("message", "Số điện thoại hoặc email đã tồn tại ở tài khoản khác!!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
         }
         // Insert new user into the database
     	try {
-            accountRepository.save(account);
-            return ResponseEntity.ok("User registered successfully");
+            System.out.println(account);
+            AccountEntity accountEntity = accountRepository.save(account);
+            res.put("status", true);
+            res.put("data", accountEntity);
+            return ResponseEntity.ok(res);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error registering user");
+            res.put("status", false);
+            res.put("message", "Đã có lỗi xảy ra trong quá trình đăng ký!!");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
         }
     }
+
  // PUT /accounts/{phone}
     @PutMapping("/{phone}")
-    public ResponseEntity<String> updateAccount(@PathVariable String phone, @RequestBody AccountEntity account) {
+    public ResponseEntity<Map<String, Object>> updateAccount(@PathVariable String phone, @RequestBody AccountEntity account) {
         Optional<AccountEntity> optionalAccount = accountRepository.findById(phone);
+        Map<String, Object> res = new HashMap<>();
         if (optionalAccount.isPresent()) {
             AccountEntity existingAccount = optionalAccount.get();
             
@@ -67,34 +87,33 @@ public class AccountController {
             existingAccount.setAccountName(account.getAccountName());
             existingAccount.setAccountPassword(account.getAccountPassword());
             existingAccount.setAccountAddress(account.getAccountAddress());
-            existingAccount.setAccountEmail(account.getAccountEmail());
             existingAccount.setAccountRole(account.getAccountRole());
             existingAccount.setAccountActive(account.isAccountActive());
             
-            accountRepository.save(existingAccount);
-            return ResponseEntity.ok("Account updated successfully");
+            existingAccount = accountRepository.save(existingAccount);
+            res.put("status", true);
+            res.put("data", existingAccount);
+            return ResponseEntity.ok(res);
         } else {
-            return ResponseEntity.notFound().build();
+            res.put("status", false);
+            res.put("message", "Tài khoản không tồn tại");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
         }
     }
- // DELETE /accounts/{phone}
-    @DeleteMapping("/{phone}")
-    public ResponseEntity<String> deleteAccount(@PathVariable String phone) {
-        if (accountRepository.existsById(phone)) {
-            accountRepository.deleteById(phone);
-            return ResponseEntity.ok("Account deleted successfully");
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
+ 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody AccountEntity account) {
+    public ResponseEntity<Map<String, Object>> login(@RequestBody AccountEntity account) {
+        Map<String, Object> res = new HashMap<>();
         AccountEntity foundAccount = accountRepository.findByAccountEmailAndAccountPassword(account.getAccountEmail(), account.getAccountPassword());
 
         if (foundAccount == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
+            res.put("status", false);
+            res.put("message", "Tài khoản hoặc mật khẩu không tồn tại");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
+        } else {
+            res.put("status", true);
+            res.put("data", foundAccount);
+            return ResponseEntity.ok(res);
         }
-
-        return ResponseEntity.ok("Login successful");
     }
 }

@@ -20,8 +20,7 @@ import lombok.Data;
 public class AccountEntity implements Serializable{
 	private static final long serialVersionUID = 1L;
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Account_Phone", length = 12)
+    @Column(name = "Account_Phone", nullable = false, length = 12)
 	private String accountPhone;
 	
 	@Column(name = "Account_Name", nullable = false, length = 255)

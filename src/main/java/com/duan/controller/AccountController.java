@@ -81,10 +81,22 @@ public class AccountController {
         Optional<AccountEntity> optionalAccount = accountRepository.findById(phone);
         Map<String, Object> res = new HashMap<>();
         if (optionalAccount.isPresent()) {
-            if (accountRepository.existsByAccountPhone(account.getAccountPhone()) || accountRepository.existsByAccountEmail(account.getAccountEmail())){
+            if (
+                account.getAccountEmail() != optionalAccount.get().getAccountEmail() &&
+                accountRepository.existsByAccountEmail(account.getAccountEmail())
+            ){
                 res.put("status", false);
-                res.put("message", "Số điện thoại hoặc email đã tồn tại ở tài khoản khác!!");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+                res.put("message", "Email đã tồn tại ở tài khoản khác!!");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res); 
+            }
+
+            if (
+                account.getAccountPhone() != optionalAccount.get().getAccountPhone() &&
+                accountRepository.existsByAccountPhone(account.getAccountPhone())
+            ){
+                res.put("status", false);
+                res.put("message", "Số điện thoại đã tồn tại ở tài khoản khác!!");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res); 
             }
             
             AccountEntity existingAccount = optionalAccount.get();

@@ -84,6 +84,8 @@ public class AccountController {
             AccountEntity existingAccount = optionalAccount.get();
             
             // Update properties of the existing account
+            existingAccount.setAccountEmail(account.getAccountEmail());
+            existingAccount.setAccountPhone(account.getAccountPhone());
             existingAccount.setAccountName(account.getAccountName());
             existingAccount.setAccountPassword(account.getAccountPassword());
             existingAccount.setAccountAddress(account.getAccountAddress());

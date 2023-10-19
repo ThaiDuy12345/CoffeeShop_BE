@@ -89,21 +89,11 @@ public class AccountController {
                 res.put("message", "Email đã tồn tại ở tài khoản khác!!");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res); 
             }
-
-            if (
-                !(account.getAccountPhone().equals(optionalAccount.get().getAccountPhone())) &&
-                accountRepository.existsByAccountPhone(account.getAccountPhone())
-            ){
-                res.put("status", false);
-                res.put("message", "Số điện thoại đã tồn tại ở tài khoản khác!!");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res); 
-            }
             
             AccountEntity existingAccount = optionalAccount.get();
             
             // Update properties of the existing account
             existingAccount.setAccountEmail(account.getAccountEmail());
-            existingAccount.setAccountPhone(account.getAccountPhone());
             existingAccount.setAccountName(account.getAccountName());
             existingAccount.setAccountPassword(account.getAccountPassword());
             existingAccount.setAccountAddress(account.getAccountAddress());

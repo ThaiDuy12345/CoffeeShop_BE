@@ -38,6 +38,8 @@ public class DiscountEntity implements Serializable {
     @Column(name = "Discount_Amount", nullable = false, columnDefinition = "decimal(18, 2) default(1000) check(Discount_Amount > 0)")
     private BigDecimal discountAmount;
 
+		
+
 	public DiscountEntity(int discountId, String discountCode, Date discountCreationDate, Date discountExpiredDate,
 			BigDecimal discountMinimumOrderPrice, BigDecimal discountAmount) {
 		this.discountId = discountId;

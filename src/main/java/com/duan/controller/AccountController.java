@@ -82,7 +82,7 @@ public class AccountController {
         Map<String, Object> res = new HashMap<>();
         if (optionalAccount.isPresent()) {
             if (
-                !(account.getAccountEmail().equals(optionalAccount.get().getAccountEmail())) &&
+                !(account.getAccountEmail().equalsIgnoreCase(optionalAccount.get().getAccountEmail())) &&
                 accountRepository.existsByAccountEmail(account.getAccountEmail())
             ){
                 res.put("status", false);

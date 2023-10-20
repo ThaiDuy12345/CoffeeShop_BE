@@ -9,7 +9,7 @@ go
 
 Create table [Account]
 (
-	Account_Phone					varchar(12)							primary key,
+	Account_Phone					varchar(13)							primary key,
 	Account_Name					nvarchar(255)	not null,
 	Account_Password				varchar(50)		not null,
 	Account_Address					nvarchar(255)	null,

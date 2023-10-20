@@ -1,6 +1,6 @@
 ﻿use master;
 go
-drop database  if exists DuAn2;
+drop database if exists DuAn2;
 go 
 create database	DuAn2;
 go
@@ -47,7 +47,7 @@ Create table [Support]
 	Support_Content					nvarchar(max)	not null, 
 	Support_Creation_date			datetime2		not null			default(GETDATE()), 
 	Support_Status					bit				not null			default(0),
-	Account_Phone					varchar(12)		not null			references [Account](Account_Phone)
+	Account_Phone					varchar(13)		not null			references [Account](Account_Phone)
 )
 go
 
@@ -63,7 +63,7 @@ go
 
 Create table [Favorite_Product]
 (
-	Account_Phone					varchar(12)		not null			references [Account](Account_Phone),	
+	Account_Phone					varchar(13)		not null			references [Account](Account_Phone),	
 	Product_ID						int				not null			references [Product](Product_ID),
 	primary key (Account_Phone, Product_ID)
 )
@@ -76,7 +76,7 @@ Create table [Feedback]
 	Feedback_Creation_Date			datetime2		not null			default(GETDATE()),
 	Feedback_Active					bit				not null			default(1),
 	Product_ID						int				not null			references [Product](Product_ID),			
-	Account_Phone					varchar(12)		not null			references [Account](Account_Phone),
+	Account_Phone					varchar(13)		not null			references [Account](Account_Phone),
 	primary key (Account_Phone, Product_ID)
 );
 go
@@ -101,7 +101,7 @@ Create table [Order]
 	Order_Price						decimal(18, 2)	not null			default(0)			check(Order_Price >= 0),
 	Order_Total_Price				decimal(18, 2)	not null			default(0)			check(Order_Total_Price >= 0),
 	Order_Note						nvarchar(255)	null, 
-	Account_Phone					varchar(12)		not null			references [Account](Account_Phone),
+	Account_Phone					varchar(13)		not null			references [Account](Account_Phone),
 	Discount_ID						int				null				references [Discount](Discount_ID)
 );
 go
@@ -172,11 +172,7 @@ go
 -- Thêm dữ liệu vào bảng [Account]
 INSERT INTO [Account] (Account_Phone, Account_Name, Account_Password, Account_Address, Account_Email)
 VALUES 
-  ('0123456789', N'Nguyễn Văn A', 'password123', N'Hà Nội', 'nguyenvana@gmail.com'),
-  ('0987654321', N'Trần Thị B', 'pass456', N'Hồ Chí Minh', 'tranthib@gmail.com'),
-  ('0369874123', N'Phạm Văn C', 'abc@123', N'Đà Nẵng', 'phamvanc@gmail.com'),
-  ('0901122334', N'Lê Thị D', 'userpass', N'Bình Dương', 'lethid@gmail.com'),
-  ('0912571469', N'Vũ Văn E', 'securepass', N'Cần Thơ', 'vuvane@gmail.com');
+  ('+841234567891', N'Admin_Coffee', '123123aA', N'Hà Nội', 'Admin@gmail.com')
 go
 
 -- Thêm dữ liệu vào bảng [Product]
@@ -208,11 +204,11 @@ go
 -- Thêm dữ liệu vào bảng [Favorite_Product]
 INSERT INTO [Favorite_Product] (Account_Phone, Product_ID)
 VALUES 
-  ('0123456789', 3),
-  ('0123456789', 1),
-  ('0123456789', 5),
-  ('0901122334', 2),
-  ('0901122334', 4);
+  ('+841234567891', 3),
+  ('+841234567891', 1),
+  ('+841234567891', 5),
+  ('+841234567891', 2),
+  ('+841234567891', 4);
 go
 
 -- Thêm dữ liệu vào bảng [Discount]
@@ -228,11 +224,11 @@ go
 -- Thêm dữ liệu vào bảng [Order]
 INSERT INTO [Order] (Order_Note, Account_Phone, Discount_ID)
 VALUES 
-  (N'Giao hàng nhanh', '0987654321', 5),
-  (N'Giao hàng tiêu chuẩn', '0987654321', 5),
-  (N'Khách hàng đặc biệt', '0987654321', null),
-  (N'Giao hàng gấp', '0987654321', null),
-  (N'Khách hàng VIP', '0987654321', null);
+  (N'Giao hàng nhanh', '+841234567891', 5),
+  (N'Giao hàng tiêu chuẩn', '+841234567891', 5),
+  (N'Khách hàng đặc biệt', '+841234567891', null),
+  (N'Giao hàng gấp', '+841234567891', null),
+  (N'Khách hàng VIP', '+841234567891', null);
 go
 
 -- Thêm dữ liệu vào bảng [Detail_Order]
@@ -248,18 +244,18 @@ go
 -- Thêm dữ liệu vào bảng [FeedBack]
 INSERT INTO [FeedBack] (Product_ID, Account_Phone, Feedback_Comment, Feedback_Rate)
 VALUES 
-  (1, '0987654321', N'Rất hài lòng với sản phẩm này.', 4),
-  (2, '0987654321', N'Chất lượng ổn, giá hơi cao.', 4),
-  (3, '0987654321', N'Sản phẩm tuyệt vời, giao hàng nhanh.', 5),
-  (4, '0987654321', N'Sản phẩm không như mong đợi.', 4),
-  (5, '0987654321', N'Hỗ trợ khách hàng rất tốt.', 5);
+  (1, '+841234567891', N'Rất hài lòng với sản phẩm này.', 4),
+  (2, '+841234567891', N'Chất lượng ổn, giá hơi cao.', 4),
+  (3, '+841234567891', N'Sản phẩm tuyệt vời, giao hàng nhanh.', 5),
+  (4, '+841234567891', N'Sản phẩm không như mong đợi.', 4),
+  (5, '+841234567891', N'Hỗ trợ khách hàng rất tốt.', 5);
 go
 
 -- Thêm dữ liệu vào bảng [Support]
 INSERT INTO [Support] (Support_Reason, Account_Phone, Support_Title, Support_Content)
 VALUES 
-  (N'Đổi trả hàng', '0987654321', N'Hỗ trợ đổi trả', N'Tôi muốn đổi sản phẩm do không vừa size.'),
-  (N'Hỏng hóc', '0987654321', N'Cần hỗ trợ sửa chữa', N'Sản phẩm của tôi bị hỏng, làm thế nào để sửa?')
+  (N'Đổi trả hàng', '+841234567891', N'Hỗ trợ đổi trả', N'Tôi muốn đổi sản phẩm do không vừa size.'),
+  (N'Hỏng hóc', '+841234567891', N'Cần hỗ trợ sửa chữa', N'Sản phẩm của tôi bị hỏng, làm thế nào để sửa?')
 
 
 -- Hiển thị dữ liệu

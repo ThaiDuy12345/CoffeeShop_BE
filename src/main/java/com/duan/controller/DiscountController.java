@@ -75,7 +75,7 @@ public class DiscountController {
   }
 
   //Update discount
-  public ResponseEntity<Map<String, Object>> updateDiscount() {
+  // public ResponseEntity<Map<String, Object>> updateDiscount() {
     
-  }
+  // }
 }

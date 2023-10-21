@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.swing.text.html.Option;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +47,22 @@ public class AccountController {
         if (optionalAccount.isPresent()) {
             res.put("status", true);
             res.put("data", optionalAccount.get());
+            return ResponseEntity.ok(res);
+        } else {
+            res.put("status", false);
+            res.put("message", "Tài khoản không tồn tại");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
+        }
+    }
+
+     // GET /accounts/{email}
+    @GetMapping("/{email}")
+    public ResponseEntity<Map<String, Object>> getAccountByEmail(@PathVariable String email) {
+        Map<String, Object> res = new HashMap<>();
+        Optional<AccountEntity> account = accountRepository.findByAccountEmail(email);
+        if (account.isPresent()) {
+            res.put("status", true);
+            res.put("data", account.get());
             return ResponseEntity.ok(res);
         } else {
             res.put("status", false);

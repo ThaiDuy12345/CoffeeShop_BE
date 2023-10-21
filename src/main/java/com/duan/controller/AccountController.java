@@ -53,6 +53,22 @@ public class AccountController {
         }
     }
 
+    // GET /accounts/{email}
+    @GetMapping("/email/{email}")
+    public ResponseEntity<Map<String, Object>> getAccountByEmail(@PathVariable String email) {
+        Map<String, Object> res = new HashMap<>();
+        Optional<AccountEntity> account = accountRepository.findByAccountEmail(email);
+        if (account.isPresent()) {
+            res.put("status", true);
+            res.put("data", account.get());
+            return ResponseEntity.ok(res);
+        } else {
+            res.put("status", false);
+            res.put("message", "Tài khoản không tồn tại");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
+        }
+    }
+
     @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> register(@RequestBody AccountEntity account) {
         Map<String, Object> res = new HashMap<>();

@@ -3,12 +3,14 @@ package com.duan.entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -38,16 +40,18 @@ public class DiscountEntity implements Serializable {
     @Column(name = "Discount_Amount", nullable = false, columnDefinition = "decimal(18, 2) default(1000) check(Discount_Amount > 0)")
     private BigDecimal discountAmount;
 
-		
+		@OneToMany(mappedBy = "discount")
+    private List<OrderingEntity> orderingEntities;
 
 	public DiscountEntity(int discountId, String discountCode, Date discountCreationDate, Date discountExpiredDate,
-			BigDecimal discountMinimumOrderPrice, BigDecimal discountAmount) {
+			BigDecimal discountMinimumOrderPrice, BigDecimal discountAmount, List<OrderingEntity> orderingEntities) {
 		this.discountId = discountId;
 		this.discountCode = discountCode;
 		this.discountCreationDate = discountCreationDate;
 		this.discountExpiredDate = discountExpiredDate;
 		this.discountMinimumOrderPrice = discountMinimumOrderPrice;
 		this.discountAmount = discountAmount;
+		this.orderingEntities = orderingEntities;
 	}
 
 	public DiscountEntity(){}
@@ -98,6 +102,14 @@ public class DiscountEntity implements Serializable {
 
 	public void setDiscountAmount(BigDecimal discountAmount) {
 		this.discountAmount = discountAmount;
+	}
+
+	public List<OrderingEntity> getOrderingEntities() {
+		return orderingEntities;
+	}
+
+	public void setOrderingEntities(List<OrderingEntity> orderingEntities) {
+		this.orderingEntities = orderingEntities;
 	}
 
 	public static long getSerialversionuid() {

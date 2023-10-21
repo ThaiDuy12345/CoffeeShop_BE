@@ -50,6 +50,8 @@ public class DiscountEntity implements Serializable {
 		this.discountAmount = discountAmount;
 	}
 
+	public DiscountEntity(){}
+
 	public int getDiscountId() {
 		return discountId;
 	}

@@ -56,7 +56,7 @@ public class AccountController {
     }
 
      // GET /accounts/{email}
-    @GetMapping("/{email}")
+    @GetMapping("/email/{email}")
     public ResponseEntity<Map<String, Object>> getAccountByEmail(@PathVariable String email) {
         Map<String, Object> res = new HashMap<>();
         Optional<AccountEntity> account = accountRepository.findByAccountEmail(email);

@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.catalina.connector.Response;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,10 +33,15 @@ public class DiscountController {
   @GetMapping
   public ResponseEntity<Map<String, Object>> getAllDiscounts() {
     Map<String, Object> res = new HashMap<>();
-    res.put("status", true);
-    res.put("data", discountRepository.findAll());
-
-    return ResponseEntity.ok(res);
+    try{
+      res.put("status", true);
+      res.put("data", discountRepository.findAll());
+      return ResponseEntity.ok(res);
+    } catch (Exception e) {
+      res.put("status", false);
+      res.put("message", "Đã có lỗi xảy");
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+    }
   }
 
   //Get discount by id

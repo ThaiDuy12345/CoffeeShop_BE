@@ -44,4 +44,85 @@ public class ProductEntity implements Serializable{
     @ManyToOne
     @JoinColumn(name = "Category_ID", nullable = false)
     private CategoryEntity category;
+
+	public ProductEntity(int productId, String productName, String productDescription, boolean productIsPopular,
+			boolean productActive, LocalDateTime productCreationDate, String productImageUrl, CategoryEntity category) {
+		super();
+		this.productId = productId;
+		this.productName = productName;
+		this.productDescription = productDescription;
+		this.productIsPopular = productIsPopular;
+		this.productActive = productActive;
+		this.productCreationDate = productCreationDate;
+		this.productImageUrl = productImageUrl;
+		this.category = category;
+	}
+
+	public int getProductId() {
+		return productId;
+	}
+
+	public void setProductId(int productId) {
+		this.productId = productId;
+	}
+
+	public String getProductName() {
+		return productName;
+	}
+
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+
+	public String getProductDescription() {
+		return productDescription;
+	}
+
+	public void setProductDescription(String productDescription) {
+		this.productDescription = productDescription;
+	}
+
+	public boolean isProductIsPopular() {
+		return productIsPopular;
+	}
+
+	public void setProductIsPopular(boolean productIsPopular) {
+		this.productIsPopular = productIsPopular;
+	}
+
+	public boolean isProductActive() {
+		return productActive;
+	}
+
+	public void setProductActive(boolean productActive) {
+		this.productActive = productActive;
+	}
+
+	public LocalDateTime getProductCreationDate() {
+		return productCreationDate;
+	}
+
+	public void setProductCreationDate(LocalDateTime productCreationDate) {
+		this.productCreationDate = productCreationDate;
+	}
+
+	public String getProductImageUrl() {
+		return productImageUrl;
+	}
+
+	public void setProductImageUrl(String productImageUrl) {
+		this.productImageUrl = productImageUrl;
+	}
+
+	public CategoryEntity getCategory() {
+		return category;
+	}
+
+	public void setCategory(CategoryEntity category) {
+		this.category = category;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
 }

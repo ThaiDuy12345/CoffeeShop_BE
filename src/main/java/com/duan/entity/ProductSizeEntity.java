@@ -3,8 +3,8 @@ package com.duan.entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Pattern;
+//import javax.validation.constraints.DecimalMin;
+//import javax.validation.constraints.Pattern;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,6 +15,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Pattern;
+
 import lombok.Data;
 
 @Entity

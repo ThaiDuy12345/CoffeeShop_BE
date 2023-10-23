@@ -77,7 +77,7 @@ public class DiscountController {
   }
 
   //Create a discount
-  @PostMapping("/")
+  @PostMapping
   public ResponseEntity<Map<String, Object>> createDiscount(@RequestBody DiscountEntity discount) {
     Map<String, Object> res = new HashMap<>();
     if (discountRepository.existsByDiscountCode(discount.getDiscountCode())){

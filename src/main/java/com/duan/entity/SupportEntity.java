@@ -3,6 +3,8 @@ package com.duan.entity;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -20,28 +22,29 @@ import lombok.Data;
 public class SupportEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Support_ID")
-    private int supportID;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "Support_ID")
+	private int supportID;
 
-    @Column(name = "Support_Reason", nullable = false)
-    private String supportReason;
+	@Column(name = "Support_Reason", nullable = false)
+	private String supportReason;
 
-    @Column(name = "Support_Title", nullable = false)
-    private String supportTitle;
+	@Column(name = "Support_Title", nullable = false)
+	private String supportTitle;
 
-    @Column(name = "Support_Content", nullable = false)
-    private String supportContent;
+	@Column(name = "Support_Content", nullable = false)
+	private String supportContent;
 
-    @Column(name = "Support_Creation_date", nullable = false, columnDefinition = "datetime2 default CURRENT_TIMESTAMP")
-    private LocalDateTime supportCreationDate;
+	@Column(name = "Support_Creation_date", nullable = false, columnDefinition = "datetime2 default CURRENT_TIMESTAMP")
+	private LocalDateTime supportCreationDate;
 
-    @Column(name = "Support_Status", nullable = false)
-    private boolean supportStatus;
+	@Column(name = "Support_Status", nullable = false)
+	private boolean supportStatus;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "Account_Phone", referencedColumnName = "Account_Phone", nullable = false)
-    private AccountEntity account;
+	@JsonIgnore
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "Account_Phone", referencedColumnName = "Account_Phone", nullable = false)
+	private AccountEntity account;
 
 	public SupportEntity(int supportID, String supportReason, String supportTitle, String supportContent,
 			LocalDateTime supportCreationDate, boolean supportStatus, AccountEntity account) {
@@ -52,6 +55,9 @@ public class SupportEntity implements Serializable {
 		this.supportCreationDate = supportCreationDate;
 		this.supportStatus = supportStatus;
 		this.account = account;
+	}
+
+	public SupportEntity() {
 	}
 
 	public int getSupportID() {

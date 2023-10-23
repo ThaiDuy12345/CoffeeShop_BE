@@ -61,4 +61,19 @@ public class CategoryController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
         }
     }
+    
+    @PostMapping
+    public ResponseEntity<Map<String, Object>> createCategory(@RequestBody CategoryEntity category) {
+        Map<String, Object> res = new HashMap<>();
+        try {
+            CategoryEntity createdCategory = categoryRepository.save(category);
+            res.put("status", true);
+            res.put("data", createdCategory);
+            return ResponseEntity.ok(res);
+        } catch (Exception e) {
+            res.put("status", false);
+            res.put("message", "Đã có lỗi xảy ra trong quá trình tạo danh mục");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+        }
+    }
 }

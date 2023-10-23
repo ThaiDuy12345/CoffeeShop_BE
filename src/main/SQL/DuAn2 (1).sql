@@ -92,15 +92,15 @@ Create table [Discount]
 )
 go
 
-Create table [Order]
+Create table [Ordering]
 (
-	Order_ID						int				identity(1,1)		primary key,
-	Order_Status					int				not null			default(0)			check(Order_Status in (0, 1, 2, 3, 4, -1)),
-	Order_Creation_Date				datetime2		not null			default(GETDATE()),
-	Order_Shipping_Fee				decimal(18, 2)	not null			default(15000)		check(Order_Shipping_Fee > 0),
-	Order_Price						decimal(18, 2)	not null			default(0)			check(Order_Price >= 0),
-	Order_Total_Price				decimal(18, 2)	not null			default(0)			check(Order_Total_Price >= 0),
-	Order_Note						nvarchar(255)	null, 
+	Ordering_ID						int				identity(1,1)		primary key,
+	Ordering_Status					int				not null			default(0)			check(Ordering_Status in (0, 1, 2, 3, 4, -1)),
+	Ordering_Creation_Date			datetime2		not null			default(GETDATE()),
+	Ordering_Shipping_Fee			decimal(18, 2)	not null			default(15000)		check(Ordering_Shipping_Fee > 0),
+	Ordering_Price					decimal(18, 2)	not null			default(0)			check(Ordering_Price >= 0),
+	Ordering_Total_Price			decimal(18, 2)	not null			default(0)			check(Ordering_Total_Price >= 0),
+	Ordering_Note					nvarchar(255)	null, 
 	Account_Phone					varchar(13)		not null			references [Account](Account_Phone),
 	Discount_ID						int				null				references [Discount](Discount_ID)
 );
@@ -110,9 +110,9 @@ Create table [Detail_Order]
 (
 	Detail_Order_Product_Quantity	int				not null			default(1)			check(Detail_Order_Product_Quantity > 0),
 	Detail_Order_Sub_Total			decimal(18, 2)	not null			default(0)			check(Detail_Order_Sub_Total >= 0),
-	Order_ID						int				not null			references [Order](Order_ID), 
+	Ordering_ID						int				not null			references [Ordering](Ordering_ID), 
 	Product_Size_ID					int				not null			references [Product_Size](Product_Size_ID),
-	primary key (Order_ID, Product_Size_ID)
+	primary key (Ordering_ID, Product_Size_ID)
 );
 go
 
@@ -121,15 +121,15 @@ on [Detail_Order]
 for insert, update
 as
 begin
-	declare @order_id int
-    declare @order_price decimal(18, 2)
+	declare @ordering_id int
+    declare @ordering_price decimal(18, 2)
 
     -- Duyệt qua từng bản ghi trong inserted
     declare cur_cursor cursor for
-    select order_id from inserted
+    select ordering_id from inserted
 
     open cur_cursor
-    fetch next from cur_cursor into @order_id
+    fetch next from cur_cursor into @ordering_id
 
     while @@fetch_status = 0
     begin
@@ -138,25 +138,25 @@ begin
         from [Product_Size]
         where Detail_Order.Product_Size_ID = Product_Size.Product_Size_ID
 
-        set @order_price = (select sum(do.Detail_Order_Sub_Total) as total_price from [Detail_Order] do
-                            inner join [Order] o on o.Order_ID = do.Order_ID
-                            where o.Order_ID = @order_id)
+        set @ordering_price = (select sum(do.Detail_Order_Sub_Total) as total_price from [Detail_Order] do
+                            inner join [Ordering] o on o.Ordering_ID = do.Ordering_ID
+                            where o.Ordering_ID = @ordering_id)
 
-        if (Select Discount_id from [Order] where Order_ID = @order_id) is null 
+        if (Select Discount_id from [Ordering] where Ordering_ID = @ordering_id) is null 
         begin
-            update [Order]
-            set Order_Price = @order_price, Order_Total_Price =  @order_price + Order_Shipping_Fee
-            where Order_ID = @order_id
+            update [Ordering]
+            set Ordering_Price = @ordering_price, Ordering_Total_Price =  @ordering_price + Ordering_Shipping_Fee
+            where Ordering_ID = @ordering_id
         end
         else
         begin
-            update [Order]
-            set Order_Price = @order_price, Order_Total_Price = (@order_price + Order_Shipping_Fee) - d.Discount_Amount
+            update [Ordering]
+            set Ordering_Price = @ordering_price, Ordering_Total_Price = (@ordering_price + Ordering_Shipping_Fee) - d.Discount_Amount
             from Discount d
-            where Order_ID = @order_id and [Order].Discount_ID = d.Discount_ID
+            where Ordering_ID = @ordering_id and [Ordering].Discount_ID = d.Discount_ID
         end
 
-        fetch next from cur_cursor into @order_id
+        fetch next from cur_cursor into @ordering_id
     end
 
     close cur_cursor
@@ -222,7 +222,7 @@ VALUES
 go
 
 -- Thêm dữ liệu vào bảng [Order]
-INSERT INTO [Order] (Order_Note, Account_Phone, Discount_ID)
+INSERT INTO [Ordering] (Ordering_Note, Account_Phone, Discount_ID)
 VALUES 
   (N'Giao hàng nhanh', '+841234567891', 5),
   (N'Giao hàng tiêu chuẩn', '+841234567891', 5),
@@ -232,7 +232,7 @@ VALUES
 go
 
 -- Thêm dữ liệu vào bảng [Detail_Order]
-INSERT INTO [Detail_Order] (Detail_Order_Product_Quantity, Order_ID, Product_Size_ID)
+INSERT INTO [Detail_Order] (Detail_Order_Product_Quantity, Ordering_ID, Product_Size_ID)
 VALUES 
   (1, 3, 1),
   (1, 2, 2),

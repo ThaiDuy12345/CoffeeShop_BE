@@ -1,6 +1,8 @@
 package com.duan.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -124,6 +126,7 @@ public class DiscountController {
         res.put("data", discountRepository.save(discountEntity));
         return ResponseEntity.ok(res);
       }catch (Exception e){
+        System.out.println(e);
         res.put("status", false);
         res.put("message", "Đã có lỗi khi cập nhật, xin vui lòng thử lại");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
@@ -139,12 +142,14 @@ public class DiscountController {
         discountEntity.setDiscountExpiredDate(discount.getDiscountExpiredDate());
         discountEntity.setDiscountMinimumOrderPrice(discount.getDiscountMinimumOrderPrice());
         discountEntity.setDiscountAmount(discount.getDiscountAmount());
+        
 
         try{
           res.put("status", true);
           res.put("data", discountRepository.save(discountEntity));
           return ResponseEntity.ok(res);
         }catch (Exception e){
+          System.out.println(e);
           res.put("status", false);
           res.put("message", "Đã có lỗi khi cập nhật, xin vui lòng thử lại");
           return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);

@@ -2,9 +2,9 @@ package com.duan.entity;
 
 import java.io.Serializable;
 
-//import javax.validation.constraints.Max;
-//import javax.validation.constraints.Min;
-//import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
 import org.hibernate.annotations.Check;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,11 +12,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Pattern;
-
 import lombok.Data;
 
 @Entity
@@ -25,8 +20,7 @@ import lombok.Data;
 public class AccountEntity implements Serializable{
 	private static final long serialVersionUID = 1L;
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Account_Phone", length = 12)
+    @Column(name = "Account_Phone", nullable = false, length = 13)
 	private String accountPhone;
 	
 	@Column(name = "Account_Name", nullable = false, length = 255)
@@ -62,6 +56,8 @@ public class AccountEntity implements Serializable{
 		this.accountRole = accountRole;
 		this.accountActive = accountActive;
 	}
+
+	public AccountEntity(){}
 
 	public String getAccountPhone() {
 		return accountPhone;

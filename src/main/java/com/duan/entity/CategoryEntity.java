@@ -28,6 +28,9 @@ public class CategoryEntity implements Serializable{
 		this.categoryId = categoryId;
 		this.categoryName = categoryName;
 	}
+	
+	public CategoryEntity() {
+	}
 
 	public int getCategoryId() {
 		return categoryId;

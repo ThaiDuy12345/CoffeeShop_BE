@@ -74,4 +74,32 @@ public class CategoryController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
         }
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, Object>> createCategory(@PathVariable int id) {
+        Map<String, Object> res = new HashMap<>();
+        Optional<CategoryEntity> optionalCategory = categoryRepository.findById(id);
+
+        if(!optionalCategory.isPresent()){
+            res.put("status", false);
+            res.put("message", "Danh mục không tồn tại");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
+        }
+
+        if(optionalCategory.get().getProductEntities().size() > 0){
+            res.put("status", false);
+            res.put("message", "Không thể xoá danh mục vì hiện tại danh mục đang có liên kết với sản phẩm liên quan");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(res);
+        }
+
+        try {
+            categoryRepository.delete(optionalCategory.get());
+            res.put("status", true);
+            return ResponseEntity.ok(res);
+        } catch (Exception e) {
+            res.put("status", false);
+            res.put("message", "Đã có lỗi xảy ra trong quá trình xoá danh mục");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+        }
+    }
 }

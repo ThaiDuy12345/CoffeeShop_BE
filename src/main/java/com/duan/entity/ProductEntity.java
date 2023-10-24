@@ -57,6 +57,11 @@ public class ProductEntity implements Serializable{
 		this.productImageUrl = productImageUrl;
 		this.category = category;
 	}
+	
+	
+
+	public ProductEntity() {
+	}
 
 	public int getProductId() {
 		return productId;

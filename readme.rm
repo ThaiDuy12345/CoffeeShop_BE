@@ -9,10 +9,6 @@ và development
     - Khởi động lại máy, mở CMD lên và chạy lệnh: mvn -v
     - Nếu hiện thị phiên bản của Aphache Maven chứng tỏ đã cài thành công
     - Vào Project và chạy lệnh mvn spring-boot:run để chạy 
-# Development
-  - mvn clean package
-  - docker build -t coffee-shop-app .
-  - docker run -p 8080:8080 --name=coffee-shop-app coffee-shop-app 
 
 
 

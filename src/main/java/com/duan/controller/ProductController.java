@@ -39,7 +39,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> getCategoryById(@PathVariable int id) {
+    public ResponseEntity<Map<String, Object>> getProductById(@PathVariable int id) {
         Map<String, Object> res = new HashMap<>();
         Optional<ProductEntity> product = productRepository.findById(id);
         if (product.isPresent()) {
@@ -52,6 +52,7 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
         }
     }
+    
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<Map<String, Object>> getProductByCategory(@PathVariable int categoryId) {
         Map<String, Object> res = new HashMap<>();
@@ -99,7 +100,6 @@ public class ProductController {
             updatedProduct.setProductDescription(product.getProductDescription());
             updatedProduct.setProductIsPopular(product.isProductIsPopular());
             updatedProduct.setProductActive(product.isProductActive());
-            updatedProduct.setProductCreationDate(product.getProductCreationDate());
             updatedProduct.setProductImageUrl(product.getProductImageUrl());
             updatedProduct.setCategory(product.getCategory());
             updatedProduct = productRepository.save(updatedProduct);

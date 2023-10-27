@@ -1,10 +1,8 @@
 package com.duan.entity;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -44,7 +42,6 @@ public class ProductEntity implements Serializable{
     @Column(name = "Product_Image_Url", nullable = false, columnDefinition = "nvarchar(max)")
     private String productImageUrl;
 
-		@JsonBackReference
     @ManyToOne
     @JoinColumn(name = "Category_ID", nullable = false)
     private CategoryEntity category;

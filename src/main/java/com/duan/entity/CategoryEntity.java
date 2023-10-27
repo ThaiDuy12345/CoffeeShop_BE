@@ -3,7 +3,7 @@ package com.duan.entity;
 import java.io.Serializable;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,8 +27,7 @@ public class CategoryEntity implements Serializable{
     @Column(name = "Category_Name", nullable = false)
     private String categoryName;
 		
-		@JsonManagedReference
+    @JsonIgnore
 		@OneToMany(mappedBy = "category")
 		private List<ProductEntity> productEntities;
-
 }

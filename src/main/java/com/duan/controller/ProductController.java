@@ -96,6 +96,19 @@ public class ProductController {
         Optional<ProductEntity> existingProduct = productRepository.findById(id);
         if (existingProduct.isPresent()) {
             ProductEntity updatedProduct = existingProduct.get();
+
+            if(product.isProductIsPopular() == true && product.isProductActive() == false){
+                res.put("status", false);
+                res.put("message", "Sản phẩm phổ biến không thể bị ẩn");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+            }
+
+            if(product.isProductActive() == true && (product.getProductImageUrl() == null || product.getProductImageUrl() == "")){
+                res.put("status", false);
+                res.put("message", "Sản phẩm không thể được kích hoạt nếu chưa có ảnh hoặc các kích cỡ");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+            }
+
             updatedProduct.setProductName(product.getProductName());
             updatedProduct.setProductDescription(product.getProductDescription());
             updatedProduct.setProductIsPopular(product.isProductIsPopular());

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,11 +21,9 @@ import com.duan.repository.SupportRepository;
 @RestController
 @RequestMapping("/supports")
 public class SupportController {
-	private final SupportRepository supportRepository;
 
-	public SupportController(SupportRepository supportRepository) {
-		this.supportRepository = supportRepository;
-	}
+	@Autowired
+	private SupportRepository supportRepository;
 
 	// GET /support
 	@GetMapping
@@ -51,20 +50,20 @@ public class SupportController {
 		}
 	}
 
-	 @PostMapping("/create")
-	    public ResponseEntity<Map<String, Object>> createSupport(@RequestBody SupportEntity support) {
-	        Map<String, Object> res = new HashMap<>();
-	        try {
-	            SupportEntity createdSupport = supportRepository.save(support);
-	            res.put("status", true);
-	            res.put("data", createdSupport);
-	            return ResponseEntity.ok(res);
-	        } catch (Exception e) {
-	            res.put("status", false);
-	            res.put("message", "Đã có lỗi xảy ra trong quá trình tạo đơn hỗ trợ");
-	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
-	        }
-	    }
+	@PostMapping("/create")
+	public ResponseEntity<Map<String, Object>> createSupport(@RequestBody SupportEntity support) {
+		Map<String, Object> res = new HashMap<>();
+		try {
+				SupportEntity createdSupport = supportRepository.save(support);
+				res.put("status", true);
+				res.put("data", createdSupport);
+				return ResponseEntity.ok(res);
+		} catch (Exception e) {
+				res.put("status", false);
+				res.put("message", "Đã có lỗi xảy ra trong quá trình tạo đơn hỗ trợ");
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+		}
+	}
 
 	// PUT /support/{id}
 

@@ -2,6 +2,7 @@ package com.duan.entity;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,83 +35,12 @@ public class SupportEntity implements Serializable {
     private String supportContent;
 
     @Column(name = "Support_Creation_date", nullable = false, columnDefinition = "datetime2 default CURRENT_TIMESTAMP")
-    private LocalDateTime supportCreationDate;
+    private Date supportCreationDate;
 
     @Column(name = "Support_Status", nullable = false)
     private boolean supportStatus;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "Account_Phone", referencedColumnName = "Account_Phone", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "Account_Phone")
     private AccountEntity account;
-
-	public SupportEntity(int supportID, String supportReason, String supportTitle, String supportContent,
-			LocalDateTime supportCreationDate, boolean supportStatus, AccountEntity account) {
-		this.supportID = supportID;
-		this.supportReason = supportReason;
-		this.supportTitle = supportTitle;
-		this.supportContent = supportContent;
-		this.supportCreationDate = supportCreationDate;
-		this.supportStatus = supportStatus;
-		this.account = account;
-	}
-
-	public int getSupportID() {
-		return supportID;
-	}
-
-	public void setSupportID(int supportID) {
-		this.supportID = supportID;
-	}
-
-	public String getSupportReason() {
-		return supportReason;
-	}
-
-	public void setSupportReason(String supportReason) {
-		this.supportReason = supportReason;
-	}
-
-	public String getSupportTitle() {
-		return supportTitle;
-	}
-
-	public void setSupportTitle(String supportTitle) {
-		this.supportTitle = supportTitle;
-	}
-
-	public String getSupportContent() {
-		return supportContent;
-	}
-
-	public void setSupportContent(String supportContent) {
-		this.supportContent = supportContent;
-	}
-
-	public LocalDateTime getSupportCreationDate() {
-		return supportCreationDate;
-	}
-
-	public void setSupportCreationDate(LocalDateTime supportCreationDate) {
-		this.supportCreationDate = supportCreationDate;
-	}
-
-	public boolean isSupportStatus() {
-		return supportStatus;
-	}
-
-	public void setSupportStatus(boolean supportStatus) {
-		this.supportStatus = supportStatus;
-	}
-
-	public AccountEntity getAccount() {
-		return account;
-	}
-
-	public void setAccount(AccountEntity account) {
-		this.account = account;
-	}
-
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
 }

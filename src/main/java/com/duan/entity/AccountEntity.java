@@ -1,14 +1,19 @@
 package com.duan.entity;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
 import org.hibernate.annotations.Check;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -43,78 +48,7 @@ public class AccountEntity implements Serializable{
     @Column(name = "Account_Active", nullable = false, columnDefinition = "bit default true")
     private boolean accountActive;
 
-	public AccountEntity(String accountPhone, String accountName, String accountPassword, 
-			String accountAddress, String accountEmail, int accountRole,
-			boolean accountActive) {
-		this.accountPhone = accountPhone;
-		this.accountName = accountName;
-		this.accountPassword = accountPassword;
-		this.accountAddress = accountAddress;
-		this.accountEmail = accountEmail;
-		this.accountRole = accountRole;
-		this.accountActive = accountActive;
-	}
-
-	public AccountEntity(){}
-
-	public String getAccountPhone() {
-		return accountPhone;
-	}
-
-	public void setAccountPhone(String accountPhone) {
-		this.accountPhone = accountPhone;
-	}
-
-	public String getAccountName() {
-		return accountName;
-	}
-
-	public void setAccountName(String accountName) {
-		this.accountName = accountName;
-	}
-
-	public String getAccountPassword() {
-		return accountPassword;
-	}
-
-	public void setAccountPassword(String accountPassword) {
-		this.accountPassword = accountPassword;
-	}
-
-	public String getAccountAddress() {
-		return accountAddress;
-	}
-
-	public void setAccountAddress(String accountAddress) {
-		this.accountAddress = accountAddress;
-	}
-
-	public String getAccountEmail() {
-		return accountEmail;
-	}
-
-	public void setAccountEmail(String accountEmail) {
-		this.accountEmail = accountEmail;
-	}
-
-	public int getAccountRole() {
-		return accountRole;
-	}
-
-	public void setAccountRole(int accountRole) {
-		this.accountRole = accountRole;
-	}
-
-	public boolean isAccountActive() {
-		return accountActive;
-	}
-
-	public void setAccountActive(boolean accountActive) {
-		this.accountActive = accountActive;
-	}
-
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
-    
+		@JsonIgnore
+		@OneToMany(mappedBy = "account")
+		private List<SupportEntity> supportEntities;
 }

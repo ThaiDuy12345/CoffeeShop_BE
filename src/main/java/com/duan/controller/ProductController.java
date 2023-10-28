@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.duan.entity.CategoryEntity;
 import com.duan.entity.ProductEntity;
-import com.duan.repository.CategoryRepositoty;
+import com.duan.repository.CategoryRepository;
 import com.duan.repository.ProductRepository;
 
 @RestController
@@ -28,7 +28,7 @@ public class ProductController {
     private ProductRepository productRepository;
 	
 	@Autowired
-    private CategoryRepositoty categoryRepository;
+    private CategoryRepository categoryRepository;
 
     @GetMapping
     public ResponseEntity<Map<String, Object>> getAllProduct() {

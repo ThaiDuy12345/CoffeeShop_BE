@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.duan.entity.CategoryEntity;
-import com.duan.repository.CategoryRepositoty;
+import com.duan.repository.CategoryRepository;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +16,7 @@ import java.util.Optional;
 public class CategoryController {
 	
     @Autowired
-    private CategoryRepositoty categoryRepository;
+    private CategoryRepository categoryRepository;
 
     @GetMapping
     public ResponseEntity<Map<String, Object>> getAllCategories() {

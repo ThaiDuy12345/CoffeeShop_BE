@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.duan.entity.AccountEntity;
 import com.duan.entity.SupportEntity;
 import com.duan.repository.SupportRepository;
 
@@ -24,7 +23,6 @@ import com.duan.repository.SupportRepository;
 public class SupportController {
 	private final SupportRepository supportRepository;
 
-	@Autowired
 	public SupportController(SupportRepository supportRepository) {
 		this.supportRepository = supportRepository;
 	}

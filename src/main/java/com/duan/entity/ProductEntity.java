@@ -3,6 +3,9 @@ package com.duan.entity;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,11 +19,13 @@ import lombok.Data;
 @Entity
 @Table(name = "Product")
 @Data
+@JsonIgnoreProperties({"hibernateLazyInitializer"})
 public class ProductEntity implements Serializable{
 	private static final long serialVersionUID = 1L;
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Product_ID")
+	// @JsonIgnore
     private int productId;
 
     @Column(name = "Product_Name", nullable = false)
@@ -56,6 +61,11 @@ public class ProductEntity implements Serializable{
 		this.productCreationDate = productCreationDate;
 		this.productImageUrl = productImageUrl;
 		this.category = category;
+	}
+	
+	
+
+	public ProductEntity() {
 	}
 
 	public int getProductId() {

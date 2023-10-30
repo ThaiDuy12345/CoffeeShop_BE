@@ -45,4 +45,8 @@ public class ProductEntity implements Serializable{
     @ManyToOne
     @JoinColumn(name = "Category_ID", nullable = false)
     private CategoryEntity category;
+
+    public ProductEntity() {
+        this.productCreationDate = new Date();
+    }
 }

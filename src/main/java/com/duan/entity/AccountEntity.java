@@ -48,7 +48,7 @@ public class AccountEntity implements Serializable{
     @Column(name = "Account_Active", nullable = false, columnDefinition = "bit default true")
     private boolean accountActive;
 
-		@JsonIgnore
-		@OneToMany(mappedBy = "account")
-		private List<SupportEntity> supportEntities;
+    @JsonIgnore
+    @OneToMany(mappedBy = "account")
+    private List<SupportEntity> supportEntities;
 }

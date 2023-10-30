@@ -261,7 +261,7 @@ VALUES
 -- Hiển thị dữ liệu
 SELECT * FROM [Account];
 go
-SELECT * FROM [Order];
+SELECT * FROM [Ordering];
 go
 SELECT * FROM [Category];
 go

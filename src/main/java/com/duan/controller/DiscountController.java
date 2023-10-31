@@ -3,7 +3,7 @@ package com.duan.controller;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.math.BigDecimal;
+  import java.math.BigDecimal;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -119,13 +119,25 @@ public class DiscountController {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
     }
 
-    DiscountEntity discountEntity = discountEntityOptional.get();
+    
 
+    if(discount.getDiscountAmount().compareTo(new BigDecimal(200000)) == 0 
+        || 
+      discount.getDiscountAmount().compareTo(new BigDecimal(200000)) > 0
+    ){
+      res.put("status", false);
+      res.put("message", "Mức giá giảm không hợp lệ, vui lòng nhập mức giảm dưới 200.000vnđ");
+      return ResponseEntity.status(HttpStatus.CONFLICT).body(res);
+    }
+
+    DiscountEntity discountEntity = discountEntityOptional.get();
+    
     if (discountEntity.getDiscountCode().equals(discount.getDiscountCode())) {
 
       discountEntity.setDiscountExpiredDate(discount.getDiscountExpiredDate());
       discountEntity.setDiscountMinimumOrderPrice(discount.getDiscountMinimumOrderPrice());
       discountEntity.setDiscountAmount(discount.getDiscountAmount());
+      
 
       try{
         res.put("status", true);

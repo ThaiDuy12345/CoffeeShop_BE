@@ -2,7 +2,7 @@ package com.duan.entity;
 
 import java.io.Serializable;
 import java.util.Date;
-
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -14,6 +14,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -51,8 +52,9 @@ public class ProductEntity implements Serializable{
     @JoinColumn(name = "Category_ID", nullable = false)
     private CategoryEntity category;
 
-		@OneToMany(mappedBy = "product")
-		private ProductSizeEntity productSizeEntities;
+    @JsonIgnore
+    @OneToMany(mappedBy = "product")
+    private List<ProductSizeEntity> productSizeEntities;
 
     public ProductEntity() {
         this.productCreationDate = new Date();

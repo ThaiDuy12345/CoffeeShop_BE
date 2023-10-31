@@ -8,7 +8,6 @@ import javax.validation.constraints.Pattern;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -26,7 +25,7 @@ public class ProductSizeEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Product_Size_ID")
-    private int productSizeID;
+    private int productSizeId;
 
     @Column(name = "Product_Size", nullable = false, length = 1)
     @Pattern(regexp = "[SML]", message = "Product size must be S, M or L")
@@ -36,52 +35,7 @@ public class ProductSizeEntity implements Serializable {
     @DecimalMin(value = "0.00", inclusive = true, message = "Product size price must be greater than or equal to 0")
     private BigDecimal productSizePrice;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "Product_ID", referencedColumnName = "Product_ID", nullable = false)
     private ProductEntity product;
-
-	public ProductSizeEntity(int productSizeID, String productSize, BigDecimal productSizePrice,
-			ProductEntity product) {
-		this.productSizeID = productSizeID;
-		this.productSize = productSize;
-		this.productSizePrice = productSizePrice;
-		this.product = product;
-	}
-
-	public int getProductSizeID() {
-		return productSizeID;
-	}
-
-	public void setProductSizeID(int productSizeID) {
-		this.productSizeID = productSizeID;
-	}
-
-	public String getProductSize() {
-		return productSize;
-	}
-
-	public void setProductSize(String productSize) {
-		this.productSize = productSize;
-	}
-
-	public BigDecimal getProductSizePrice() {
-		return productSizePrice;
-	}
-
-	public void setProductSizePrice(BigDecimal productSizePrice) {
-		this.productSizePrice = productSizePrice;
-	}
-
-	public ProductEntity getProduct() {
-		return product;
-	}
-
-	public void setProduct(ProductEntity product) {
-		this.product = product;
-	}
-
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
-    
 }

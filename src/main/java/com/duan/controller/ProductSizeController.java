@@ -1,6 +1,8 @@
 package com.duan.controller;
 
+import com.duan.entity.ProductEntity;
 import com.duan.entity.ProductSizeEntity;
+import com.duan.repository.ProductRepository;
 import com.duan.repository.ProductSizeRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,33 +16,58 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/productsizes")
+@RequestMapping("/product_sizes")
 public class ProductSizeController {
 
     private final ProductSizeRepository productSizeRepository;
+    private final ProductRepository productRepository;
 
-    @Autowired
-    public ProductSizeController(ProductSizeRepository productSizeRepository) {
+    public ProductSizeController(ProductSizeRepository productSizeRepository, ProductRepository productRepository) {
         this.productSizeRepository = productSizeRepository;
+        this.productRepository = productRepository;
     }
 
-    // GET /productsizes/product/{productId}
+    // GET /product_sizes/product/{productId}
     @GetMapping("/product/{productId}")
     public ResponseEntity<Map<String, Object>> getAllProductSizeByProductID(@PathVariable int productId) {
         Map<String, Object> res = new HashMap<>();
         List<ProductSizeEntity> productSizes = productSizeRepository.findByProduct_ProductId(productId);
-        if (!productSizes.isEmpty()) {
+        res.put("status", true);
+        res.put("data", productSizes);
+        return ResponseEntity.ok(res);
+    }
+
+    // PUT /product_sizes/product/{productId}
+    @PostMapping("/product/{productId}")
+    public ResponseEntity<Map<String, Object>> createProductSize(@PathVariable int productId, @RequestBody ProductSizeEntity productSize) {
+        Optional<ProductEntity> optionalProduct = productRepository.findById(productId);
+        Map<String, Object> res = new HashMap<>();
+        if (optionalProduct.isPresent()) {
+            ProductEntity existingProduct = optionalProduct.get();
+
+            if(productSizeRepository.countByProductSizeAndProductId(productSize.getProductSize(), existingProduct.getProductId()) > 0){
+                res.put("status", false);
+                res.put("message", "Kích cỡ sản phẩm đã tồn tại");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+            }
+            ProductSizeEntity productSizeEntity = new ProductSizeEntity();
+            
+            productSizeEntity.setProductSize(productSize.getProductSize());
+            productSizeEntity.setProductSizePrice(productSize.getProductSizePrice());
+            productSizeEntity.setProduct(existingProduct);
+
+            productSizeEntity = productSizeRepository.save(productSizeEntity);
             res.put("status", true);
-            res.put("data", productSizes);
+            res.put("data", productSizeEntity);
             return ResponseEntity.ok(res);
         } else {
             res.put("status", false);
-            res.put("message", "Không tìm thấy kích thước sản phẩm cho ID sản phẩm đã cung cấp");
+            res.put("message", "Sản phẩm không tồn tại");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
         }
     }
 
-    // PUT /productsizes/{productSizeId}
+    // POST /product_sizes/{productSizeId}
     @PutMapping("/{productSizeId}")
     public ResponseEntity<Map<String, Object>> updateProductSize(@PathVariable int productSizeId, @RequestBody ProductSizeEntity productSize) {
         Optional<ProductSizeEntity> optionalProductSize = productSizeRepository.findById(productSizeId);
@@ -60,18 +87,18 @@ public class ProductSizeController {
         }
     }
 
-    // DELETE /productsizes/{productSizeId}
-    @DeleteMapping("/productSize/{id}")
-    public ResponseEntity<Map<String, Object>> deleteProductSize(@PathVariable int id) {
+    // DELETE /product_sizes/{productSizeId}
+    @DeleteMapping("/{productSizeId}")
+    public ResponseEntity<Map<String, Object>> deleteProductSize(@PathVariable int productSizeId) {
         Map<String, Object> res = new HashMap<>();
         try {
-            productSizeRepository.deleteById(id);
+            productSizeRepository.deleteById(productSizeId);
             res.put("status", true);
-            res.put("message", "Size sản phẩm có ID " + id + " đã bị xóa");
+            res.put("message", "Size sản phẩm có ID " + productSizeId + " đã bị xóa");
             return ResponseEntity.ok(res);
         } catch (Exception e) {
             res.put("status", false);
-            res.put("message", "Không xóa được size sản phẩm có ID " + id);
+            res.put("message", "Không xóa được size sản phẩm có ID " + productSizeId);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
         }
     }

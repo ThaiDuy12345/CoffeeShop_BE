@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.Date;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,11 +20,13 @@ import lombok.Data;
 @Entity
 @Table(name = "Product")
 @Data
+@JsonIgnoreProperties({"hibernateLazyInitializer"})
 public class ProductEntity implements Serializable{
 	private static final long serialVersionUID = 1L;
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Product_ID")
+	// @JsonIgnore
     private int productId;
 
     @Column(name = "Product_Name", nullable = false)
@@ -45,6 +50,9 @@ public class ProductEntity implements Serializable{
     @ManyToOne
     @JoinColumn(name = "Category_ID", nullable = false)
     private CategoryEntity category;
+
+		@OneToMany(mappedBy = "product")
+		private ProductSizeEntity productSizeEntities;
 
     public ProductEntity() {
         this.productCreationDate = new Date();

@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -45,10 +43,10 @@ public class OrderingEntity implements Serializable{
     @Column(name = "Ordering_Note", length = 255)
     private String orderingNote;
 
-    @Column(name = "Account_Phone", nullable = false)
-    private String accountPhone;
+    @ManyToOne
+    @JoinColumn(name = "Account_Phone")
+    private AccountEntity account;
     
-    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "Discount_ID")
     private DiscountEntity discount;

@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -42,7 +42,7 @@ public class DiscountEntity implements Serializable {
     @Column(name = "Discount_Amount", nullable = false, columnDefinition = "decimal(18, 2) default(1000) check(Discount_Amount > 0)")
     private BigDecimal discountAmount;
 		
-		@JsonManagedReference
+		@JsonIgnore
 		@OneToMany(mappedBy = "discount")
     private List<OrderingEntity> orderingEntities;
 }

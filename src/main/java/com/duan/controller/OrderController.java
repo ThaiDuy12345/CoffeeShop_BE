@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.duan.entity.OrderingEntity;
+import com.duan.repository.AccountRepository;
 import com.duan.repository.OrderRepository;
 
 @RestController
@@ -25,6 +26,9 @@ public class OrderController {
 
     @Autowired
     private OrderRepository orderRepository;
+
+    @Autowired
+    private AccountRepository accountRepository;
 
     // GET /orders
     @GetMapping("orders")
@@ -60,6 +64,8 @@ public class OrderController {
         if (existingOrder.isPresent()) {
         	OrderingEntity orderToUpdate = existingOrder.get();
 
+            
+
             // Cập nhật thông tin hóa đơn với dữ liệu từ payload body
             orderToUpdate.setOrderingStatus(updatedOrder.getOrderingStatus());
             orderToUpdate.setOrderingCreationDate(updatedOrder.getOrderingCreationDate());
@@ -67,7 +73,6 @@ public class OrderController {
             orderToUpdate.setOrderingPrice(updatedOrder.getOrderingPrice());
             orderToUpdate.setOrderingTotalPrice(updatedOrder.getOrderingTotalPrice());
             orderToUpdate.setOrderingNote(updatedOrder.getOrderingNote());
-            orderToUpdate.setAccountPhone(updatedOrder.getAccountPhone());
             orderToUpdate.setDiscount(updatedOrder.getDiscount());
             
 
@@ -91,14 +96,22 @@ public class OrderController {
 
 
     // POST /orders
-    @PostMapping
-    public ResponseEntity<Map<String, Object>> createOrder(@RequestBody OrderingEntity newOrder) {
+    @PostMapping("/{accountPhone}")
+    public ResponseEntity<Map<String, Object>> createOrder(@PathVariable String accountPhone, @RequestBody OrderingEntity newOrder) {
         Map<String, Object> res = new HashMap<>();
         try {
+            if(!accountRepository.existsByAccountPhone(accountPhone)){
+                res.put("status", false);
+                res.put("message", "Số điện thoại tài khoản không tồn tại");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+            }
             // Lưu hóa đơn mới vào cơ sở dữ liệu
         	OrderingEntity createdOrder = orderRepository.save(newOrder);
+            createdOrder.setAccount(accountRepository.findById(accountPhone).get());
+            OrderingEntity order = orderRepository.save(createdOrder);
+
             res.put("status", true);
-            res.put("data", createdOrder);
+            res.put("data", order);
             return ResponseEntity.ok(res);
         } catch (Exception e) {
             res.put("status", false);

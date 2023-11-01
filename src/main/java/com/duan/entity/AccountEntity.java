@@ -51,4 +51,8 @@ public class AccountEntity implements Serializable{
     @JsonIgnore
     @OneToMany(mappedBy = "account")
     private List<SupportEntity> supportEntities;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "account")
+    private List<OrderingEntity> orderingEntities;
 }

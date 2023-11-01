@@ -22,12 +22,10 @@ import com.duan.repository.AccountRepository;
 @RestController
 @RequestMapping("/accounts")
 public class AccountController {
-	private final AccountRepository accountRepository;
-
+    
     @Autowired
-    public AccountController(AccountRepository accountRepository) {
-        this.accountRepository = accountRepository;
-    }
+	private AccountRepository accountRepository;
+
  // GET /accounts
     @GetMapping
     public ResponseEntity<Map<String, Object>> getAllAccounts() {

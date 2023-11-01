@@ -20,6 +20,7 @@ import com.duan.entity.CategoryEntity;
 import com.duan.entity.ProductEntity;
 import com.duan.repository.CategoryRepository;
 import com.duan.repository.ProductRepository;
+import com.duan.repository.ProductSizeRepository;
 
 @RestController
 @RequestMapping("/products")
@@ -30,11 +31,14 @@ public class ProductController {
 	@Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private ProductSizeRepository productSizeRepository;
+
     @GetMapping
     public ResponseEntity<Map<String, Object>> getAllProduct() {
     	Map<String, Object> res = new HashMap<>();
         res.put("status", true);
-        res.put("data", productRepository.findAll());
+        res.put("datda", productRepository.findAll());
         return ResponseEntity.ok(res);
     }
 
@@ -79,6 +83,20 @@ public class ProductController {
     public ResponseEntity<Map<String, Object>> createProduct(@RequestBody ProductEntity product) {
         Map<String, Object> res = new HashMap<>();
         try {
+
+            if(product.isProductIsPopular() == true && product.isProductActive() == false){
+                res.put("status", false);
+                res.put("message", "Sản phẩm phổ biến không thể bị ẩn");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+            }
+
+            if(product.isProductActive() == true && (product.getProductImageUrl() == null || product.getProductImageUrl() == "")){
+                res.put("status", false);
+                res.put("message", "Sản phẩm không thể được kích hoạt nếu chưa có ảnh hoặc các kích cỡ");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+            }
+
+
             ProductEntity createdProduct = productRepository.save(product);
             res.put("status", true);
             res.put("data", createdProduct);
@@ -105,7 +123,12 @@ public class ProductController {
 
             if(product.isProductActive() == true && (product.getProductImageUrl() == null || product.getProductImageUrl() == "")){
                 res.put("status", false);
-                res.put("message", "Sản phẩm không thể được kích hoạt nếu chưa có ảnh hoặc các kích cỡ");
+                res.put("message", "Sản phẩm không thể được kích hoạt nếu chưa có ảnh");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+            }
+            if(product.isProductActive() == true && productSizeRepository.findByProduct_ProductId(id).isEmpty()){
+                res.put("status", false);
+                res.put("message", "Sản phẩm không thể được kích hoạt nếu chưa có các kích cỡ");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
             }
 

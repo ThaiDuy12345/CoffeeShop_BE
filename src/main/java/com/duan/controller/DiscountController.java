@@ -119,8 +119,6 @@ public class DiscountController {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
     }
 
-    
-
     if(discount.getDiscountAmount().compareTo(new BigDecimal(200000)) == 0 
         || 
       discount.getDiscountAmount().compareTo(new BigDecimal(200000)) > 0
@@ -131,7 +129,7 @@ public class DiscountController {
     }
 
     DiscountEntity discountEntity = discountEntityOptional.get();
-    
+
     if (discountEntity.getDiscountCode().equals(discount.getDiscountCode())) {
 
       discountEntity.setDiscountExpiredDate(discount.getDiscountExpiredDate());

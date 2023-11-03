@@ -13,7 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.duan.repository.DetailOrderRepository;
+import com.duan.repository.OrderingRepository;
+import com.duan.repository.ProductSizeRepository;
 import com.duan.entity.DetailOrderEntity;
+import com.duan.entity.DetailOrderId;
 
 import java.util.HashMap;
 import java.util.List;
@@ -27,11 +30,17 @@ public class DetailOrderController {
     @Autowired
     private DetailOrderRepository detailOrderRepository;
 
+    @Autowired
+    private OrderingRepository orderingRepository;
+
+    @Autowired
+    private ProductSizeRepository productSizeRepository;
+
     // GET /detail-orders/by-order/{id}
     @GetMapping("/by-order/{id}")
     public ResponseEntity<Map<String, Object>> getDetailOrdersByOrderId(@PathVariable int id) {
         Map<String, Object> res = new HashMap<>();
-        List<DetailOrderEntity> detailOrders = detailOrderRepository.findByOrderId(id);
+        List<DetailOrderEntity> detailOrders = detailOrderRepository.findAllByDetailOrderIdOrderingId(id);
         if (!detailOrders.isEmpty()) {
             res.put("status", true);
             res.put("data", detailOrders);
@@ -43,14 +52,17 @@ public class DetailOrderController {
         }
     }
     
+    
     // POST /detail-orders
     @PostMapping
     public ResponseEntity<Map<String, Object>> createDetailOrder(@RequestBody DetailOrderEntity newDetailOrder) {
         Map<String, Object> res = new HashMap<>();
         try {
+
             // Kiểm tra xem đã tồn tại chi tiết đơn hàng với orderId và productSizeId tương ứng chưa
-            Optional<DetailOrderEntity> existingDetailOrder = detailOrderRepository.findByOrderIdAndProductSizeId(
-                    newDetailOrder.getOrderId(), newDetailOrder.getProductSizeId());
+            Optional<DetailOrderEntity> existingDetailOrder = detailOrderRepository.findById(
+                newDetailOrder.getDetailOrderId()
+            );
 
             if (existingDetailOrder.isPresent()) {
                 res.put("status", false);
@@ -58,6 +70,9 @@ public class DetailOrderController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
             }
 
+            newDetailOrder.setOrderingEntity(orderingRepository.findById(newDetailOrder.getOrderingEntity().getOrderingID()).get());
+            newDetailOrder.setProductSizeEntity(productSizeRepository.findById(newDetailOrder.getProductSizeEntity().getProductSizeId()).get());
+            
             // Lưu chi tiết đơn hàng mới vào cơ sở dữ liệu
             DetailOrderEntity createdDetailOrder = detailOrderRepository.save(newDetailOrder);
             res.put("status", true);
@@ -70,11 +85,14 @@ public class DetailOrderController {
         }
     }
     
-    // PUT /detail-orders/{id}
-    @PutMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> updateDetailOrder(@PathVariable int id, @RequestBody DetailOrderEntity updatedDetailOrder) {
+    // PUT /detail-orders
+    @PutMapping
+    public ResponseEntity<Map<String, Object>> updateDetailOrder(@RequestBody DetailOrderEntity updatedDetailOrder) {
         Map<String, Object> res = new HashMap<>();
-        Optional<DetailOrderEntity> existingDetailOrder = detailOrderRepository.findById(id);
+        // Kiểm tra xem đã tồn tại chi tiết đơn hàng với orderId và productSizeId tương ứng chưa
+        Optional<DetailOrderEntity> existingDetailOrder = detailOrderRepository.findById(
+            updatedDetailOrder.getDetailOrderId()
+        );
 
         if (existingDetailOrder.isPresent()) {
             DetailOrderEntity detailOrderToUpdate = existingDetailOrder.get();
@@ -99,12 +117,19 @@ public class DetailOrderController {
     
  // DELETE /detail-orders/{id}
     @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> deleteDetailOrder(@PathVariable int id) {
+    public ResponseEntity<Map<String, Object>> deleteDetailOrder(@RequestBody DetailOrderId detailOrderId) {
         Map<String, Object> res = new HashMap<>();
 
         try {
+            Optional<DetailOrderEntity> existingDetailOrder = detailOrderRepository.findById(detailOrderId);
+
             // Xoá chi tiết đơn hàng theo ID
-            detailOrderRepository.deleteById(id);
+             if (!existingDetailOrder.isPresent()) {
+                res.put("status", false);
+                res.put("message", "Hoá đơn chi tiết không tồn tại");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
+            }
+            detailOrderRepository.deleteById(existingDetailOrder.get().getDetailOrderId());
 
             res.put("status", true);
             return ResponseEntity.ok(res);

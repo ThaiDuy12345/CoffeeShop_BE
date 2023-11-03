@@ -1,15 +1,12 @@
 package com.duan.repository;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.duan.entity.DetailOrderEntity;
+import com.duan.entity.DetailOrderId;
 
-public interface DetailOrderRepository extends JpaRepository<DetailOrderEntity, Integer>{
-	List<DetailOrderEntity> findByOrderId(int orderId);
-	Optional<DetailOrderEntity> findByOrderIdAndProductSizeId(int orderId, int productSizeId);
-	Optional<DetailOrderEntity> findById(int detailOrderId);
-	void deleteById(int detailOrderId);
+public interface DetailOrderRepository extends JpaRepository<DetailOrderEntity, DetailOrderId>{
+	List<DetailOrderEntity> findAllByDetailOrderIdOrderingId(int orderingId);
 }

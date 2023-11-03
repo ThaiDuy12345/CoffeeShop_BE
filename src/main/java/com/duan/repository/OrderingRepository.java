@@ -7,6 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.duan.entity.OrderingEntity;
 
-public interface OrderRepository extends JpaRepository<OrderingEntity, Integer>{
-    Optional<OrderingEntity> findByOrderID(int orderId);
+public interface OrderingRepository extends JpaRepository<OrderingEntity, Integer>{
 }

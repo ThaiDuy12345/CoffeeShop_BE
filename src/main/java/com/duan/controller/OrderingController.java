@@ -18,24 +18,24 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.duan.entity.OrderingEntity;
 import com.duan.repository.AccountRepository;
-import com.duan.repository.OrderRepository;
+import com.duan.repository.OrderingRepository;
 
 @RestController
-@RequestMapping("/orders")
-public class OrderController {
+@RequestMapping("/orderings")
+public class OrderingController {
 
     @Autowired
-    private OrderRepository orderRepository;
+    private OrderingRepository orderingRepository;
 
     @Autowired
     private AccountRepository accountRepository;
 
     // GET /orders
-    @GetMapping("orders")
+    @GetMapping
     public ResponseEntity<Map<String, Object>> getAllOrder() {
         Map<String, Object> res = new HashMap<>();
         res.put("status", true);
-        res.put("data", orderRepository.findAll());
+        res.put("data", orderingRepository.findAll());
         return ResponseEntity.ok(res);
     }
 
@@ -43,7 +43,7 @@ public class OrderController {
     @GetMapping("/{id}")
     public ResponseEntity<Map<String, Object>> getOrderById(@PathVariable int orderId) {
         Map<String, Object> res = new HashMap<>();
-        Optional<OrderingEntity> order = orderRepository.findByOrderID(orderId);
+        Optional<OrderingEntity> order = orderingRepository.findById(orderId);
         if (order.isPresent()) {
             res.put("status", true);
             res.put("data", order.get());
@@ -58,7 +58,7 @@ public class OrderController {
  // PUT /orders/{id}
     @PutMapping("/{id}")
     public ResponseEntity<Map<String, Object>> updateOrder(@PathVariable int id, @RequestBody OrderingEntity updatedOrder) {
-        Optional<OrderingEntity> existingOrder = orderRepository.findByOrderID(id);
+        Optional<OrderingEntity> existingOrder = orderingRepository.findById(id);
         Map<String, Object> res = new HashMap<>();
 
         if (existingOrder.isPresent()) {
@@ -78,7 +78,7 @@ public class OrderController {
 
             // Lưu hóa đơn đã được cập nhật vào cơ sở dữ liệu
             try {
-                orderToUpdate = orderRepository.save(orderToUpdate);
+                orderToUpdate = orderingRepository.save(orderToUpdate);
                 res.put("status", true);
                 res.put("data", orderToUpdate);
                 return ResponseEntity.ok(res);
@@ -106,9 +106,9 @@ public class OrderController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
             }
             // Lưu hóa đơn mới vào cơ sở dữ liệu
-        	OrderingEntity createdOrder = orderRepository.save(newOrder);
+        	OrderingEntity createdOrder = orderingRepository.save(newOrder);
             createdOrder.setAccount(accountRepository.findById(accountPhone).get());
-            OrderingEntity order = orderRepository.save(createdOrder);
+            OrderingEntity order = orderingRepository.save(createdOrder);
 
             res.put("status", true);
             res.put("data", order);

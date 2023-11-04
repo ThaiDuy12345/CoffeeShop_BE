@@ -47,7 +47,7 @@ public class OrderingEntity implements Serializable{
     @Column(name = "Ordering_Note", length = 255)
     private String orderingNote;
 
-    @Column(name = "Ordering_Note", nullable = false, columnDefinition = "default(0)")
+    @Column(name = "Ordering_Payment_Status", nullable = false, columnDefinition = "default(0)")
     private Boolean orderingPaymentStatus;
 
     @ManyToOne

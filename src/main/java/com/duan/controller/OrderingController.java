@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.duan.entity.OrderingEntity;
 import com.duan.repository.AccountRepository;
+import com.duan.repository.DiscountRepository;
 import com.duan.repository.OrderingRepository;
 
 @RestController
@@ -30,6 +31,9 @@ public class OrderingController {
     @Autowired
     private AccountRepository accountRepository;
 
+    @Autowired
+    private DiscountRepository discountRepository;
+
     // GET /orders
     @GetMapping
     public ResponseEntity<Map<String, Object>> getAllOrder() {
@@ -40,7 +44,7 @@ public class OrderingController {
     }
 
     // GET /orders/{id}
-    @GetMapping("/{id}")
+    @GetMapping("/{orderId}")
     public ResponseEntity<Map<String, Object>> getOrderById(@PathVariable int orderId) {
         Map<String, Object> res = new HashMap<>();
         Optional<OrderingEntity> order = orderingRepository.findById(orderId);
@@ -64,18 +68,22 @@ public class OrderingController {
         if (existingOrder.isPresent()) {
         	OrderingEntity orderToUpdate = existingOrder.get();
 
-            
-
             // Cập nhật thông tin hóa đơn với dữ liệu từ payload body
             orderToUpdate.setOrderingStatus(updatedOrder.getOrderingStatus());
-            orderToUpdate.setOrderingCreationDate(updatedOrder.getOrderingCreationDate());
             orderToUpdate.setOrderingShippingFee(updatedOrder.getOrderingShippingFee());
-            orderToUpdate.setOrderingPrice(updatedOrder.getOrderingPrice());
-            orderToUpdate.setOrderingTotalPrice(updatedOrder.getOrderingTotalPrice());
-            orderToUpdate.setOrderingNote(updatedOrder.getOrderingNote());
-            orderToUpdate.setDiscount(updatedOrder.getDiscount());
+            orderToUpdate.setOrderingNote(
+                updatedOrder.getOrderingNote() != null ? 
+                    updatedOrder.getOrderingNote() 
+                        : 
+                    orderToUpdate.getOrderingNote()
+            );
+            orderToUpdate.setDiscount(
+                updatedOrder.getDiscount() != null ? 
+                    discountRepository.findById(updatedOrder.getDiscount().getDiscountId()).get() 
+                        : 
+                    orderToUpdate.getDiscount()
+            );
             
-
             // Lưu hóa đơn đã được cập nhật vào cơ sở dữ liệu
             try {
                 orderToUpdate = orderingRepository.save(orderToUpdate);
@@ -106,12 +114,11 @@ public class OrderingController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
             }
             // Lưu hóa đơn mới vào cơ sở dữ liệu
-        	OrderingEntity createdOrder = orderingRepository.save(newOrder);
-            createdOrder.setAccount(accountRepository.findById(accountPhone).get());
-            OrderingEntity order = orderingRepository.save(createdOrder);
+            newOrder.setAccount(accountRepository.findById(accountPhone).get());
+            OrderingEntity order = orderingRepository.save(newOrder);
 
             res.put("status", true);
-            res.put("data", order);
+            res.put("data", orderingRepository.findById(order.getOrderingID()));
             return ResponseEntity.ok(res);
         } catch (Exception e) {
             res.put("status", false);

@@ -38,7 +38,7 @@ public class ProductController {
     public ResponseEntity<Map<String, Object>> getAllProduct() {
     	Map<String, Object> res = new HashMap<>();
         res.put("status", true);
-        res.put("datda", productRepository.findAll());
+        res.put("data", productRepository.findAll());
         return ResponseEntity.ok(res);
     }
 

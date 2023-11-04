@@ -58,4 +58,12 @@ public class OrderingEntity implements Serializable{
     @JsonIgnore
     @OneToMany(mappedBy = "orderingEntity")
     private List<DetailOrderEntity> detailOrderEntities;
+
+    public OrderingEntity(){
+        this.orderingCreationDate = new Date();
+        this.orderingStatus = 0;
+        this.orderingShippingFee = new BigDecimal(15000);
+        this.orderingPrice = new BigDecimal(0);
+        this.orderingTotalPrice =  new BigDecimal(0);
+    }
 }

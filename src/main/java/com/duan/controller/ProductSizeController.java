@@ -5,11 +5,11 @@ import com.duan.entity.ProductSizeEntity;
 import com.duan.repository.ProductRepository;
 import com.duan.repository.ProductSizeRepository;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +50,13 @@ public class ProductSizeController {
                 res.put("message", "Kích cỡ sản phẩm đã tồn tại");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
             }
+
+            if(productSize.getProductSizePrice().compareTo(new BigDecimal(1000000)) > 0){
+                res.put("status", false);
+                res.put("message", "Gía thành kích cỡ không được vượt quá 1.000.000VNĐ");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+            }
+
             ProductSizeEntity productSizeEntity = new ProductSizeEntity();
             
             productSizeEntity.setProductSize(productSize.getProductSize());

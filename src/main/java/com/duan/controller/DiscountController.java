@@ -92,7 +92,7 @@ public class DiscountController {
       discount.getDiscountAmount().compareTo(new BigDecimal(200000)) > 0
     ){
       res.put("status", false);
-      res.put("message", "Mức giá giảm không hợp lệ, vui lòng nhập mức giảm dưới 200.000vnđ");
+      res.put("message", "Mức giá giảm không hợp lệ, vui lòng nhập mức giảm dưới 200.000VNĐ");
       return ResponseEntity.status(HttpStatus.CONFLICT).body(res);
     }
     try {

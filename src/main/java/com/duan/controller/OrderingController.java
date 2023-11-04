@@ -70,6 +70,7 @@ public class OrderingController {
 
             // Cập nhật thông tin hóa đơn với dữ liệu từ payload body
             orderToUpdate.setOrderingStatus(updatedOrder.getOrderingStatus());
+            orderToUpdate.setOrderingPaymentStatus(updatedOrder.getOrderingPaymentStatus());
             orderToUpdate.setOrderingShippingFee(updatedOrder.getOrderingShippingFee());
             orderToUpdate.setOrderingNote(
                 updatedOrder.getOrderingNote() != null ? 

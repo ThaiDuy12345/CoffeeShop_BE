@@ -47,6 +47,9 @@ public class OrderingEntity implements Serializable{
     @Column(name = "Ordering_Note", length = 255)
     private String orderingNote;
 
+    @Column(name = "Ordering_Note", nullable = false, columnDefinition = "default(0)")
+    private Boolean orderingPaymentStatus;
+
     @ManyToOne
     @JoinColumn(name = "Account_Phone")
     private AccountEntity account;
@@ -63,6 +66,7 @@ public class OrderingEntity implements Serializable{
         this.orderingCreationDate = new Date();
         this.orderingStatus = 0;
         this.orderingShippingFee = new BigDecimal(15000);
+        this.orderingPaymentStatus = false;
         this.orderingPrice = new BigDecimal(0);
         this.orderingTotalPrice =  new BigDecimal(0);
     }

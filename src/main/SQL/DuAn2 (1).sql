@@ -100,6 +100,7 @@ Create table [Ordering]
 	Ordering_Shipping_Fee			decimal(18, 2)	not null			default(15000)		check(Ordering_Shipping_Fee > 0),
 	Ordering_Price					decimal(18, 2)	not null			default(0)			check(Ordering_Price >= 0),
 	Ordering_Total_Price			decimal(18, 2)	not null			default(0)			check(Ordering_Total_Price >= 0),
+	Ordering_Payment_Status			bit 			not null			default(0),
 	Ordering_Note					nvarchar(255)	null, 
 	Account_Phone					varchar(13)		not null			references [Account](Account_Phone),
 	Discount_ID						int				null				references [Discount](Discount_ID)
@@ -216,19 +217,19 @@ VALUES (N'Trà'), (N'Cà phê'), (N'Đồ ăn');
 go
 
 -- Thêm dữ liệu vào bảng [Account]
-INSERT INTO [Account] (Account_Phone, Account_Name, Account_Password, Account_Address, Account_Email)
+INSERT INTO [Account] (Account_Phone, Account_Name, Account_Password, Account_Address, Account_Email, Account_Role)
 VALUES 
-  ('+841234567891', N'Admin_Coffee', '123123aA', N'Hà Nội', 'Admin@gmail.com')
+  ('+841234567891', N'Admin_Coffee', '123123aA', N'Hà Nội', 'Admin@gmail.com', 0)
 go
 
 -- Thêm dữ liệu vào bảng [Product]
 INSERT INTO [Product] (Product_Name, Product_Description, Product_Image_Url, Category_ID)
 VALUES 
-  (N'Trà Xanh', N'Trà xanh nguyên chất', '/main/app/image1.url', 1),
-  (N'Cà Phê Robusta', N'Cà phê Robusta chất lượng cao', '/main/app/image2.url', 2),
-  (N'Bánh Mì Sandwich', N'Bánh mì sandwich thơm ngon', '/main/app/image3.url', 3),
-  (N'Trà Đào', N'Trà đào mát lạnh', '/main/app/image4.url', 1),
-  (N'Cà Phê Arabica', N'Cà phê Arabica đắng ngắt', '/main/app/image5.url', 2);
+  (N'Trà Xanh', N'Trà xanh nguyên chất', '', 1),
+  (N'Cà Phê Robusta', N'Cà phê Robusta chất lượng cao', '', 2),
+  (N'Bánh Mì Sandwich', N'Bánh mì sandwich thơm ngon', '', 3),
+  (N'Trà Đào', N'Trà đào mát lạnh', '', 1),
+  (N'Cà Phê Arabica', N'Cà phê Arabica đắng ngắt', '', 2);
 go
 
 -- Thêm dữ liệu vào bảng [Product_Size]

@@ -49,10 +49,10 @@ public class AccountEntity implements Serializable{
     private boolean accountActive;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "account")
+    @OneToMany(mappedBy = "accountEntity")
     private List<SupportEntity> supportEntities;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "account")
+    @OneToMany(mappedBy = "accountEntity")
     private List<OrderingEntity> orderingEntities;
 }

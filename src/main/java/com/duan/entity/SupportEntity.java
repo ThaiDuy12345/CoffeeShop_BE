@@ -40,5 +40,5 @@ public class SupportEntity implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "Account_Phone")
-    private AccountEntity account;
+    private AccountEntity accountEntity;
 }

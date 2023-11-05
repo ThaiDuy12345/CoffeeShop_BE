@@ -78,11 +78,11 @@ public class OrderingController {
                         : 
                     orderToUpdate.getOrderingNote()
             );
-            orderToUpdate.setDiscount(
-                updatedOrder.getDiscount() != null ? 
-                    discountRepository.findById(updatedOrder.getDiscount().getDiscountId()).get() 
+            orderToUpdate.setDiscountEntity(
+                updatedOrder.getDiscountEntity() != null ? 
+                    discountRepository.findById(updatedOrder.getDiscountEntity().getDiscountId()).get() 
                         : 
-                    orderToUpdate.getDiscount()
+                    orderToUpdate.getDiscountEntity()
             );
             
             // Lưu hóa đơn đã được cập nhật vào cơ sở dữ liệu
@@ -115,7 +115,7 @@ public class OrderingController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
             }
             // Lưu hóa đơn mới vào cơ sở dữ liệu
-            newOrder.setAccount(accountRepository.findById(accountPhone).get());
+            newOrder.setAccountEntity(accountRepository.findById(accountPhone).get());
             OrderingEntity order = orderingRepository.save(newOrder);
 
             res.put("status", true);

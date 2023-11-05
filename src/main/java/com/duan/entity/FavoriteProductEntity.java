@@ -26,53 +26,9 @@ public class FavoriteProductEntity implements Serializable{
 
     @ManyToOne
     @JoinColumn(name = "Account_Phone")
-    private AccountEntity account;
+    private AccountEntity accountEntity;
 
     @ManyToOne
     @JoinColumn(name = "Product_ID")
-    private ProductEntity product;
-
-	public FavoriteProductEntity(String accountPhone, int productId, AccountEntity account, ProductEntity product) {
-		super();
-		this.accountPhone = accountPhone;
-		this.productId = productId;
-		this.account = account;
-		this.product = product;
-	}
-
-	public String getAccountPhone() {
-		return accountPhone;
-	}
-
-	public void setAccountPhone(String accountPhone) {
-		this.accountPhone = accountPhone;
-	}
-
-	public int getProductId() {
-		return productId;
-	}
-
-	public void setProductId(int productId) {
-		this.productId = productId;
-	}
-
-	public AccountEntity getAccount() {
-		return account;
-	}
-
-	public void setAccount(AccountEntity account) {
-		this.account = account;
-	}
-
-	public ProductEntity getProduct() {
-		return product;
-	}
-
-	public void setProduct(ProductEntity product) {
-		this.product = product;
-	}
-
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
+    private ProductEntity productEntity;
 }

@@ -50,10 +50,10 @@ public class ProductEntity implements Serializable{
 
     @ManyToOne
     @JoinColumn(name = "Category_ID", nullable = false)
-    private CategoryEntity category;
+    private CategoryEntity categoryEntity;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "productEntity")
     private List<ProductSizeEntity> productSizeEntities;
 
     public ProductEntity() {

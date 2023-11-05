@@ -31,7 +31,7 @@ public class ProductSizeController {
     @GetMapping("/product/{productId}")
     public ResponseEntity<Map<String, Object>> getAllProductSizeByProductID(@PathVariable int productId) {
         Map<String, Object> res = new HashMap<>();
-        List<ProductSizeEntity> productSizes = productSizeRepository.findByProduct_ProductId(productId);
+        List<ProductSizeEntity> productSizes = productSizeRepository.findByProductEntity_ProductId(productId);
         res.put("status", true);
         res.put("data", productSizes);
         return ResponseEntity.ok(res);
@@ -61,7 +61,7 @@ public class ProductSizeController {
             
             productSizeEntity.setProductSize(productSize.getProductSize());
             productSizeEntity.setProductSizePrice(productSize.getProductSizePrice());
-            productSizeEntity.setProduct(existingProduct);
+            productSizeEntity.setProductEntity(existingProduct);
 
             productSizeEntity = productSizeRepository.save(productSizeEntity);
             res.put("status", true);

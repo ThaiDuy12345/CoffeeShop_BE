@@ -41,7 +41,7 @@ public class ProductSizeEntity implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "Product_ID", referencedColumnName = "Product_ID", nullable = false)
-    private ProductEntity product;
+    private ProductEntity productEntity;
 
     @JsonIgnore
     @OneToMany(mappedBy = "productSizeEntity")

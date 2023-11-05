@@ -62,7 +62,7 @@ public class ProductController {
         Map<String, Object> res = new HashMap<>();
         Optional<CategoryEntity> category = categoryRepository.findById(categoryId);
         if (category.isPresent()) {
-            List<ProductEntity> products = productRepository.findByCategory(category.get());
+            List<ProductEntity> products = productRepository.findByCategoryEntity(category.get());
             if (!products.isEmpty()) {
                 res.put("status", true);
                 res.put("data", products);
@@ -126,7 +126,7 @@ public class ProductController {
                 res.put("message", "Sản phẩm không thể được kích hoạt nếu chưa có ảnh");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
             }
-            if(product.isProductActive() == true && productSizeRepository.findByProduct_ProductId(id).isEmpty()){
+            if(product.isProductActive() == true && productSizeRepository.findByProductEntity_ProductId(id).isEmpty()){
                 res.put("status", false);
                 res.put("message", "Sản phẩm không thể được kích hoạt nếu chưa có các kích cỡ");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
@@ -137,7 +137,7 @@ public class ProductController {
             updatedProduct.setProductIsPopular(product.isProductIsPopular());
             updatedProduct.setProductActive(product.isProductActive());
             updatedProduct.setProductImageUrl(product.getProductImageUrl());
-            updatedProduct.setCategory(product.getCategory());
+            updatedProduct.setCategoryEntity(product.getCategoryEntity());
             updatedProduct = productRepository.save(updatedProduct);
             res.put("status", true);
             res.put("data", updatedProduct);

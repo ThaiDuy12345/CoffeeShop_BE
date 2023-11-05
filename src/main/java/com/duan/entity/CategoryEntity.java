@@ -28,6 +28,6 @@ public class CategoryEntity implements Serializable{
     private String categoryName;
 		
     @JsonIgnore
-		@OneToMany(mappedBy = "category")
+		@OneToMany(mappedBy = "categoryEntity")
 		private List<ProductEntity> productEntities;
 }

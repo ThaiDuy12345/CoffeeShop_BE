@@ -52,11 +52,11 @@ public class OrderingEntity implements Serializable{
 
     @ManyToOne
     @JoinColumn(name = "Account_Phone")
-    private AccountEntity account;
+    private AccountEntity accountEntity;
     
     @ManyToOne
     @JoinColumn(name = "Discount_ID")
-    private DiscountEntity discount;
+    private DiscountEntity discountEntity;
 
     @JsonIgnore
     @OneToMany(mappedBy = "orderingEntity")

@@ -8,5 +8,5 @@ import com.duan.entity.CategoryEntity;
 import com.duan.entity.ProductEntity;
 
 public interface ProductRepository extends JpaRepository<ProductEntity, Integer>{
-	List<ProductEntity> findByCategory(CategoryEntity category);
+	List<ProductEntity> findByCategoryEntity(CategoryEntity category);
 }

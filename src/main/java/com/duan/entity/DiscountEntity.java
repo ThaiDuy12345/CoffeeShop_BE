@@ -43,6 +43,6 @@ public class DiscountEntity implements Serializable {
     private BigDecimal discountAmount;
 		
 		@JsonIgnore
-		@OneToMany(mappedBy = "discount")
+		@OneToMany(mappedBy = "discountEntity")
     private List<OrderingEntity> orderingEntities;
 }

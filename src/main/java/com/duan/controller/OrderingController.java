@@ -4,6 +4,8 @@ package com.duan.controller;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.List;
+
 
 import javax.swing.text.html.parser.Entity;
 
@@ -45,6 +47,31 @@ public class OrderingController {
         res.put("status", true);
         res.put("data", orderingRepository.findAll());
         return ResponseEntity.ok(res);
+    }
+
+    // GET /orders
+    @GetMapping("/account/{accountPhone}")
+    public ResponseEntity<Map<String, Object>> getByAccountPhoneAndStatus(@PathVariable String accountPhone) {
+        Map<String, Object> res = new HashMap<>();
+        try{
+            List<OrderingEntity> orders = orderingRepository.findAllByOrderingStatusAndAccountEntity_AccountPhone(0, accountPhone);
+            if(orders.isEmpty()){
+                OrderingEntity newOrder = new OrderingEntity();
+                newOrder.setAccountEntity(accountRepository.findById(accountPhone).get());
+                newOrder = orderingRepository.save(newOrder);
+                res.put("status", true);
+                res.put("data", newOrder);
+                return ResponseEntity.ok(res);
+            }else{
+                res.put("status", true);
+                res.put("data", orders.get(0));
+                return ResponseEntity.ok(res);
+            }
+        }catch(Exception e){
+            res.put("status", false);
+            res.put("message", "Đã có lỗi xảy ra trong quá trình lấy thông tin giỏ hàng");
+            return ResponseEntity.ok(res);
+        }
     }
 
     // GET /orders/{id}

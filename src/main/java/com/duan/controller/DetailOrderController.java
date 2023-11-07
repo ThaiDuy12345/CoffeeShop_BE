@@ -51,9 +51,14 @@ public class DetailOrderController {
             );
 
             if (existingDetailOrder.isPresent()) {
-                res.put("status", false);
-                res.put("message", "Hoá đơn chi tiết đã tồn tại ");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+                detailOrderRepository.updateDetailOrder(
+                    newDetailOrder.getDetailOrderProductQuantity() + 1,
+                    newDetailOrder.getDetailOrderId().getOrderingId(),
+                    newDetailOrder.getDetailOrderId().getProductSizeId()
+                );
+                res.put("status", true);
+                res.put("data", existingDetailOrder);
+                return ResponseEntity.ok(res);
             }
             
             // Lưu chi tiết đơn hàng mới vào cơ sở dữ liệu

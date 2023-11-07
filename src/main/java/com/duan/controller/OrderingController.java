@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.swing.text.html.parser.Entity;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.duan.entity.OrderingEntity;
 import com.duan.repository.AccountRepository;
-import com.duan.repository.DiscountRepository;
 import com.duan.repository.OrderingRepository;
+
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 
 @RestController
 @RequestMapping("/orderings")
@@ -32,7 +36,7 @@ public class OrderingController {
     private AccountRepository accountRepository;
 
     @Autowired
-    private DiscountRepository discountRepository;
+    private EntityManager entityManager;
 
     // GET /orders
     @GetMapping
@@ -61,6 +65,7 @@ public class OrderingController {
 
  // PUT /orders/{id}
     @PutMapping("/{id}")
+    @Transactional
     public ResponseEntity<Map<String, Object>> updateOrder(@PathVariable int id, @RequestBody OrderingEntity updatedOrder) {
         Optional<OrderingEntity> existingOrder = orderingRepository.findById(id);
         Map<String, Object> res = new HashMap<>();
@@ -78,20 +83,15 @@ public class OrderingController {
                         : 
                     orderToUpdate.getOrderingNote()
             );
-            orderToUpdate.setDiscountEntity(
-                updatedOrder.getDiscountEntity() != null ? 
-                    discountRepository.findById(updatedOrder.getDiscountEntity().getDiscountId()).get() 
-                        : 
-                    orderToUpdate.getDiscountEntity()
-            );
-            
-            // Lưu hóa đơn đã được cập nhật vào cơ sở dữ liệu
+            orderToUpdate.setDiscountEntity(updatedOrder.getDiscountEntity());
             try {
                 orderToUpdate = orderingRepository.save(orderToUpdate);
+                entityManager.flush();
                 res.put("status", true);
                 res.put("data", orderToUpdate);
                 return ResponseEntity.ok(res);
             } catch (Exception e) {
+                System.out.println(e);
                 res.put("status", false);
                 res.put("message", "Đã có lỗi xảy ra trong quá trình cập nhật hóa đơn");
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);

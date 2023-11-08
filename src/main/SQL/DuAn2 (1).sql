@@ -101,8 +101,11 @@ Create table Ordering
 	Ordering_Price					decimal(18, 2)	not null			default(0)			check(Ordering_Price >= 0),
 	Ordering_Total_Price			decimal(18, 2)	not null			default(0)			check(Ordering_Total_Price >= 0),
 	Ordering_Payment_Status			bit 			not null			default(0),
-	Ordering_Note					nvarchar(255)	null, 
+	Ordering_Note					nvarchar(255)	null,
+	Ordering_Cancel_Description		nvarchar(255)	null,
+	Ordering_Approve_Description	nvarchar(255)	null,
 	Account_Phone					varchar(13)		not null			references Account(Account_Phone),
+	Updated_By						varchar(13)		null				references Account(Account_Phone),
 	Discount_ID						int				null				references Discount(Discount_ID)
 );
 go
@@ -149,22 +152,19 @@ begin
 				from Detail_Order do
 				where do.Ordering_ID = @ordering_id
 			)
-
-			-- Update Ordering based on total price
-			if (Select Discount_id from Ordering where Ordering_ID = @ordering_id) is null 
+			if not exists (select * from Detail_Order where Ordering_ID = @ordering_id)
 			begin
 				update Ordering
-				set Ordering_Price = @ordering_price, Ordering_Total_Price = @ordering_price + Ordering_Shipping_Fee
+				set Ordering_Price = 0
 				where Ordering_ID = @ordering_id
 			end
 			else
 			begin
 				update Ordering
-				set Ordering_Price = @ordering_price, Ordering_Total_Price = (@ordering_price + Ordering_Shipping_Fee) - d.Discount_Amount
-				from Discount d
-				where Ordering_ID = @ordering_id and Ordering.Discount_ID = d.Discount_ID
+				set Ordering_Price = @ordering_price
+				where Ordering_ID = @ordering_id
 			end
-
+			
 			fetch next from cur_cursor into @ordering_id
       end
     end
@@ -188,19 +188,9 @@ begin
                                 inner join Ordering o on o.Ordering_ID = do.Ordering_ID
                                 where o.Ordering_ID = @ordering_id)
 
-            if (Select Discount_id from Ordering where Ordering_ID = @ordering_id) is null 
-            begin
-                update Ordering
-                set Ordering_Price = @ordering_price, Ordering_Total_Price =  @ordering_price + Ordering_Shipping_Fee
-                where Ordering_ID = @ordering_id
-            end
-            else
-            begin
-                update Ordering
-                set Ordering_Price = @ordering_price, Ordering_Total_Price = (@ordering_price + Ordering_Shipping_Fee) - d.Discount_Amount
-                from Discount d
-                where Ordering_ID = @ordering_id and Ordering.Discount_ID = d.Discount_ID
-            end
+            update Ordering
+            set Ordering_Price = @ordering_price
+            where Ordering_ID = @ordering_id
 
             fetch next from cur_cursor into @ordering_id
         end
@@ -210,6 +200,55 @@ begin
 	deallocate cur_cursor
 end
 go
+
+create trigger Update_Ordering_Total_Price
+on Ordering
+for insert, update
+as
+begin
+    -- Cập nhật Ordering_Total_Price cho từng hàng được thêm hoặc cập nhật
+    declare 
+		@Ordering_ID int, 
+		@Ordering_Price decimal(18, 2), 
+		@Ordering_Shipping_Fee decimal(18, 2), 
+		@Discount_Amount decimal(18, 2)
+
+    declare cur cursor for
+    select i.Ordering_ID, i.Ordering_Price, i.Ordering_Shipping_Fee, d.Discount_Amount
+    from inserted i
+    left join Discount d on i.Discount_ID = d.Discount_ID
+
+    open cur
+	fetch next from cur into @Ordering_ID, @Ordering_Price, @Ordering_Shipping_Fee, @Discount_Amount
+
+    while @@fetch_status = 0
+    begin
+         --Cập nhật Ordering_Total_Price cho từng hàng
+		 declare @ordering_total_price int = 
+		 (case
+			when @Discount_Amount IS NULL then @Ordering_Price + @Ordering_Shipping_Fee
+			else (@Ordering_Price + @Ordering_Shipping_Fee) - @Discount_Amount
+         end)
+
+		if @ordering_total_price >=0
+		begin
+			update Ordering
+			set Ordering_Total_Price = @ordering_total_price
+			where Ordering_ID = @Ordering_ID
+		end
+		else
+		begin
+			update Ordering
+			set Ordering_Total_Price = 0
+			where Ordering_ID = @Ordering_ID
+		end
+
+        fetch next from cur into @Ordering_ID, @Ordering_Price, @Ordering_Shipping_Fee, @Discount_Amount
+    end
+
+    close cur
+    deallocate cur
+end;
 
 -- Thêm dữ liệu vào bảng Category
 INSERT INTO Category (Category_Name)

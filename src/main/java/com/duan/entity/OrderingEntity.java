@@ -47,12 +47,22 @@ public class OrderingEntity implements Serializable{
     @Column(name = "Ordering_Note", length = 255)
     private String orderingNote;
 
+    @Column(name = "Ordering_Cancel_Description", length = 255)
+    private String orderingCancelDescription;
+
+    @Column(name = "Ordering_Approve_Description", length = 255)
+    private String orderingApproveDescription;
+
     @Column(name = "Ordering_Payment_Status", nullable = false, columnDefinition = "default(0)")
     private Boolean orderingPaymentStatus;
 
     @ManyToOne
     @JoinColumn(name = "Account_Phone")
     private AccountEntity accountEntity;
+
+    @ManyToOne
+    @JoinColumn(name = "Updated_By")
+    private AccountEntity updatedByAccountEntity;
     
     @ManyToOne
     @JoinColumn(name = "Discount_ID")

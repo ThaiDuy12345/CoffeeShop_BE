@@ -110,7 +110,20 @@ public class OrderingController {
                         : 
                     orderToUpdate.getOrderingNote()
             );
+            orderToUpdate.setUpdatedByAccountEntity(updatedOrder.getUpdatedByAccountEntity());
             orderToUpdate.setDiscountEntity(updatedOrder.getDiscountEntity());
+            orderToUpdate.setOrderingCancelDescription(
+                updatedOrder.getOrderingCancelDescription() != null ? 
+                    updatedOrder.getOrderingCancelDescription() 
+                        : 
+                    orderToUpdate.getOrderingCancelDescription()
+            );
+            orderToUpdate.setOrderingApproveDescription(
+                updatedOrder.getOrderingApproveDescription() != null ? 
+                    updatedOrder.getOrderingApproveDescription() 
+                        : 
+                    orderToUpdate.getOrderingApproveDescription()
+            );
             try {
                 orderToUpdate = orderingRepository.save(orderToUpdate);
                 entityManager.flush();

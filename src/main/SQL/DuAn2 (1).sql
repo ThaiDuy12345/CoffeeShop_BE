@@ -249,7 +249,7 @@ begin
     close cur
     deallocate cur
 end;
-
+go
 -- Thêm dữ liệu vào bảng Category
 INSERT INTO Category (Category_Name)
 VALUES (N'Trà'), (N'Cà phê'), (N'Đồ ăn');

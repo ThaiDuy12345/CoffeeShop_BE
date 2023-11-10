@@ -99,7 +99,6 @@ public class OrderingController {
 
         if (existingOrder.isPresent()) {
         	OrderingEntity orderToUpdate = existingOrder.get();
-
             // Cập nhật thông tin hóa đơn với dữ liệu từ payload body
             orderToUpdate.setOrderingStatus(updatedOrder.getOrderingStatus());
             orderToUpdate.setOrderingPaymentStatus(updatedOrder.getOrderingPaymentStatus());

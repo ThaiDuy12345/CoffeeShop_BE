@@ -76,7 +76,6 @@ public class AccountController {
         }
         // Insert new user into the database
     	try {
-            System.out.println(account);
             AccountEntity accountEntity = accountRepository.save(account);
             res.put("status", true);
             res.put("data", accountEntity);

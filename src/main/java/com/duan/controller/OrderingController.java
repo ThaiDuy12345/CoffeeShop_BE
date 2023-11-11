@@ -99,6 +99,21 @@ public class OrderingController {
 
         if (existingOrder.isPresent()) {
         	OrderingEntity orderToUpdate = existingOrder.get();
+            
+            // Kiểm tra coi thử nhân viên duyệt đơn có đúng với nhân duyệt đơn trước đó đã duyệt hoặc là admin
+            if(
+                !((
+                    (orderToUpdate.getOrderingStatus() != 0 && orderToUpdate.getOrderingStatus() != 1) &&
+                    orderToUpdate.getUpdatedByAccountEntity().getAccountPhone().equals(
+                        updatedOrder.getUpdatedByAccountEntity().getAccountPhone()
+                    )
+                ) ||
+                updatedOrder.getUpdatedByAccountEntity().getAccountRole() == 0)
+            ) {
+                res.put("status", false);
+                res.put("message", "Bạn không quyền thao tác đơn hàng, chỉ có admin hoặc nhân viên" + orderToUpdate.getUpdatedByAccountEntity().getAccountName() + " mới có thể thao tác");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(res);
+            }
             // Cập nhật thông tin hóa đơn với dữ liệu từ payload body
             orderToUpdate.setOrderingStatus(updatedOrder.getOrderingStatus());
             orderToUpdate.setOrderingPaymentStatus(updatedOrder.getOrderingPaymentStatus());
@@ -130,7 +145,6 @@ public class OrderingController {
                 res.put("data", orderToUpdate);
                 return ResponseEntity.ok(res);
             } catch (Exception e) {
-                System.out.println(e);
                 res.put("status", false);
                 res.put("message", "Đã có lỗi xảy ra trong quá trình cập nhật hóa đơn");
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);

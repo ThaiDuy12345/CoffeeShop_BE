@@ -32,7 +32,7 @@ Create table Product
 	Product_Name					nvarchar(50)	not null,
 	Product_Description				nvarchar(max)	not null,
 	Product_Is_Popular				bit				not null			default(0),
-	Product_Active					bit				not null			default(1),
+	Product_Active					bit				not null			default(0),
 	Product_Creation_Date			datetime2		not null			default(GETDATE()),
 	Product_Image_Url				nvarchar(max)	not null,
 	Category_ID						int				not null			references Category(Category_ID)

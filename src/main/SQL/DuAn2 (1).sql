@@ -327,11 +327,11 @@ go
 -- Thêm dữ liệu vào bảng Detail_Order
 INSERT INTO Detail_Order (Detail_Order_Product_Quantity, Ordering_ID, Product_Size_ID)
 VALUES 
-  (1, 1, 5),
-  (1, 2, 2),
-  (3, 2, 3),
-  (1, 2, 4),
-  (2, 2, 5)
+  (1, 3, 2),
+  (1, 5, 3),
+  (3, 4, 3),
+  (1, 5, 4),
+  (2, 5, 5)
 go
 
 -- Thêm dữ liệu vào bảng FeedBack

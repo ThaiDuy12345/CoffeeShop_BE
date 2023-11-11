@@ -120,7 +120,7 @@ public class DetailOrderController {
     }
     
  // DELETE /detail-orders/{id}
-    @DeleteMapping
+    @PostMapping("/delete")
     public ResponseEntity<Map<String, Object>> deleteDetailOrder(@RequestBody DetailOrderId detailOrderId) {
         Map<String, Object> res = new HashMap<>();
 

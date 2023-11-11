@@ -32,7 +32,7 @@ Create table Product
 	Product_Name					nvarchar(50)	not null,
 	Product_Description				nvarchar(max)	not null,
 	Product_Is_Popular				bit				not null			default(0),
-	Product_Active					bit				not null			default(0),
+	Product_Active					bit				not null			default(1),
 	Product_Creation_Date			datetime2		not null			default(GETDATE()),
 	Product_Image_Url				nvarchar(max)	not null,
 	Category_ID						int				not null			references Category(Category_ID)
@@ -100,7 +100,13 @@ Create table Ordering
 	Ordering_Shipping_Fee			decimal(18, 2)	not null			default(15000)		check(Ordering_Shipping_Fee > 0),
 	Ordering_Price					decimal(18, 2)	not null			default(0)			check(Ordering_Price >= 0),
 	Ordering_Total_Price			decimal(18, 2)	not null			default(0)			check(Ordering_Total_Price >= 0),
-	Ordering_Payment_Status			bit 			not null			default(0),
+	-- null: Chưa thanh toán
+	-- 0: Thanh toán COD
+	-- 1: Đã Thanh toán qua Momo
+	-- 2: Đã Thanh toán qua ZaloPay
+	-- -1: Hoàn tiền thanh toán qua Momo
+	-- -2: Hoàn tiền thanh toán qua ZaloPay
+	Ordering_Payment_Status			int 			null				default(null)		check(Ordering_Payment_Status in (0, 1, -1, 2, -2)),
 	Ordering_Note					nvarchar(255)	null,
 	Ordering_Cancel_Description		nvarchar(255)	null,
 	Ordering_Approve_Description	nvarchar(255)	null,
@@ -250,6 +256,7 @@ begin
     deallocate cur
 end;
 go
+
 -- Thêm dữ liệu vào bảng Category
 INSERT INTO Category (Category_Name)
 VALUES (N'Trà'), (N'Cà phê'), (N'Đồ ăn');
@@ -320,7 +327,7 @@ go
 -- Thêm dữ liệu vào bảng Detail_Order
 INSERT INTO Detail_Order (Detail_Order_Product_Quantity, Ordering_ID, Product_Size_ID)
 VALUES 
-  (1, 3, 1),
+  (1, 1, 5),
   (1, 2, 2),
   (3, 2, 3),
   (1, 2, 4),

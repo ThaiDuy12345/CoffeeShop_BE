@@ -10,6 +10,7 @@ import java.util.List;
 import javax.swing.text.html.parser.Entity;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.duan.entity.OrderingEntity;
 import com.duan.repository.AccountRepository;
+import com.duan.repository.DiscountRepository;
 import com.duan.repository.OrderingRepository;
 
 import jakarta.persistence.EntityManager;
@@ -36,6 +38,9 @@ public class OrderingController {
 
     @Autowired
     private AccountRepository accountRepository;
+
+    @Autowired
+    private DiscountRepository discountRepository;
 
     @Autowired
     private EntityManager entityManager;
@@ -92,8 +97,7 @@ public class OrderingController {
 
  // PUT /orders/{id}
     @PutMapping("/{id}")
-    @Transactional
-    public ResponseEntity<Map<String, Object>> updateOrder(@PathVariable int id, @RequestBody OrderingEntity updatedOrder) {
+	public ResponseEntity<Map<String, Object>> updateOrder(@PathVariable int id, @RequestBody OrderingEntity updatedOrder) {
         Optional<OrderingEntity> existingOrder = orderingRepository.findById(id);
         Map<String, Object> res = new HashMap<>();
 
@@ -101,18 +105,31 @@ public class OrderingController {
         	OrderingEntity orderToUpdate = existingOrder.get();
             
             // Kiểm tra coi thử nhân viên duyệt đơn có đúng với nhân duyệt đơn trước đó đã duyệt hoặc là admin
-            if(
-                !((
-                    (orderToUpdate.getOrderingStatus() != 0 && orderToUpdate.getOrderingStatus() != 1) &&
-                    orderToUpdate.getUpdatedByAccountEntity().getAccountPhone().equals(
-                        updatedOrder.getUpdatedByAccountEntity().getAccountPhone()
-                    )
-                ) ||
-                updatedOrder.getUpdatedByAccountEntity().getAccountRole() == 0)
+            if (
+                orderToUpdate.getUpdatedByAccountEntity() != null
             ) {
-                res.put("status", false);
-                res.put("message", "Bạn không quyền thao tác đơn hàng, chỉ có admin hoặc nhân viên" + orderToUpdate.getUpdatedByAccountEntity().getAccountName() + " mới có thể thao tác");
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(res);
+                if(updatedOrder.getUpdatedByAccountEntity() == null){
+                    res.put("status", false);
+                    res.put("message", "Không tìm thấy nhân viên duyệt đơn hàng");
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(res);
+                }
+
+                if(
+                    !(  
+                        (
+                            orderToUpdate.getOrderingStatus() != 0 && 
+                            orderToUpdate.getOrderingStatus() != 1 &&
+                            orderToUpdate.getUpdatedByAccountEntity().getAccountPhone().equals(
+                                updatedOrder.getUpdatedByAccountEntity().getAccountPhone()
+                            )
+                        ) ||
+                        accountRepository.findById(updatedOrder.getUpdatedByAccountEntity().getAccountPhone()).get().getAccountRole() == 0
+                    )
+                ) {
+                    res.put("status", false);
+                    res.put("message", "Bạn không quyền thao tác đơn hàng, chỉ có admin hoặc nhân viên duyệt đơn mới có thể thao tác");
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(res);
+                }
             }
             // Cập nhật thông tin hóa đơn với dữ liệu từ payload body
             orderToUpdate.setOrderingStatus(updatedOrder.getOrderingStatus());
@@ -124,8 +141,23 @@ public class OrderingController {
                         : 
                     orderToUpdate.getOrderingNote()
             );
-            orderToUpdate.setUpdatedByAccountEntity(updatedOrder.getUpdatedByAccountEntity());
-            orderToUpdate.setDiscountEntity(updatedOrder.getDiscountEntity());
+
+            if(updatedOrder.getUpdatedByAccountEntity() != null){
+                orderToUpdate.setUpdatedByAccountEntity(
+                    accountRepository.findById(
+                        updatedOrder.getUpdatedByAccountEntity().getAccountPhone()
+                    ).get()
+                );
+            }
+
+            if(updatedOrder.getDiscountEntity() != null){
+                orderToUpdate.setDiscountEntity(
+                    discountRepository.findById(
+                        updatedOrder.getDiscountEntity().getDiscountId()
+                    ).get()
+                );
+            }
+            
             orderToUpdate.setOrderingCancelDescription(
                 updatedOrder.getOrderingCancelDescription() != null ? 
                     updatedOrder.getOrderingCancelDescription() 
@@ -138,9 +170,9 @@ public class OrderingController {
                         : 
                     orderToUpdate.getOrderingApproveDescription()
             );
+
             try {
-                orderToUpdate = orderingRepository.save(orderToUpdate);
-                entityManager.flush();
+                orderToUpdate = orderingRepository.saveAndFlush(orderToUpdate);
                 res.put("status", true);
                 res.put("data", orderToUpdate);
                 return ResponseEntity.ok(res);

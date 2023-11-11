@@ -137,7 +137,7 @@ public class ProductController {
             updatedProduct.setProductIsPopular(product.isProductIsPopular());
             updatedProduct.setProductActive(product.isProductActive());
             updatedProduct.setProductImageUrl(product.getProductImageUrl());
-            updatedProduct.setCategoryEntity(product.getCategoryEntity());
+            updatedProduct.setCategoryEntity(categoryRepository.findById(product.getCategoryEntity().getCategoryId()).get());
             updatedProduct = productRepository.save(updatedProduct);
             res.put("status", true);
             res.put("data", updatedProduct);

@@ -17,10 +17,15 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.AllArgsConstructor;
 
 @Entity
 @Table(name = "Ordering")
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
 public class OrderingEntity implements Serializable{
 	private static final long serialVersionUID = 1L;
 	

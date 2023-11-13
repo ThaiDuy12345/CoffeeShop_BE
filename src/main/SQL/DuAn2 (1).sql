@@ -126,82 +126,66 @@ Create table Detail_Order
 );
 go
 
+create trigger Delete_Price_Trigger
+on Detail_Order
+after delete
+as
+begin
+	declare 
+		@ordering_price int, @ordering_id int = (select ordering_id from deleted)
+		set @ordering_price = (
+			select sum(do.Detail_Order_Sub_Total) as total_price
+			from Detail_Order do
+			where do.Ordering_ID = @ordering_id
+		)
+	if not exists (select * from Detail_Order where Ordering_ID = @ordering_id)
+	begin
+		update Ordering
+		set Ordering_Price = 0
+		where Ordering_ID = @ordering_id
+	end
+	else
+	begin
+		update Ordering
+		set Ordering_Price = @ordering_price
+		where Ordering_ID = @ordering_id
+	end
+end
+go
+
 create trigger Update_Price_Trigger
 on Detail_Order
-for insert, update, delete
+for insert, update
 as
 begin
 	declare @ordering_id int
+	declare @product_size_id int
 	declare @ordering_price decimal(18, 2)
 	
-	if exists (select * from deleted)
+	-- Duyệt qua từng bản ghi trong inserted
+	declare cur_cursor cursor for
+	select ordering_id, product_size_id from inserted
+	open cur_cursor
+	fetch next from cur_cursor into @ordering_id, @product_size_id
+
+	while @@fetch_status = 0
 	begin
-		-- Handle DELETE operation
-		declare cur_cursor cursor for
-		select ordering_id from deleted
-
-		open cur_cursor
-		fetch next from cur_cursor into @ordering_id
-
-		while @@fetch_status = 0
-		begin
-			-- Update Detail_Order_Sub_Total based on remaining Detail_Order records
 			update do
 			set Detail_Order_Sub_Total = do.Detail_Order_Product_Quantity * ps.Product_Size_Price
 			from Detail_Order do
 			inner join Product_Size ps on do.Product_Size_ID = ps.Product_Size_ID
-			where do.Ordering_ID = @ordering_id
+			where do.Ordering_ID = @ordering_id and do.Product_Size_ID = @product_size_id
 
-			-- Recalculate total price for the ordering
-			set @ordering_price = (
-				select sum(do.Detail_Order_Sub_Total) as total_price
-				from Detail_Order do
-				where do.Ordering_ID = @ordering_id
-			)
-			if not exists (select * from Detail_Order where Ordering_ID = @ordering_id)
-			begin
-				update Ordering
-				set Ordering_Price = 0
-				where Ordering_ID = @ordering_id
-			end
-			else
-			begin
-				update Ordering
-				set Ordering_Price = @ordering_price
-				where Ordering_ID = @ordering_id
-			end
-			
-			fetch next from cur_cursor into @ordering_id
-      end
-    end
-	else
-	begin
-        -- Duyệt qua từng bản ghi trong inserted
-        declare cur_cursor cursor for
-        select ordering_id from inserted
+			set @ordering_price = (select sum(do.Detail_Order_Sub_Total) as total_price from Detail_Order do
+													inner join Ordering o on o.Ordering_ID = do.Ordering_ID
+													where o.Ordering_ID = @ordering_id)
 
-        open cur_cursor
-        fetch next from cur_cursor into @ordering_id
+			update Ordering
+			set Ordering_Price = @ordering_price
+			where Ordering_ID = @ordering_id
 
-        while @@fetch_status = 0
-        begin
-            update do
-						set Detail_Order_Sub_Total = do.Detail_Order_Product_Quantity * ps.Product_Size_Price
-						from Detail_Order do
-						inner join Product_Size ps on do.Product_Size_ID = ps.Product_Size_ID
-						where do.Ordering_ID = @ordering_id
-
-            set @ordering_price = (select sum(do.Detail_Order_Sub_Total) as total_price from Detail_Order do
-                                inner join Ordering o on o.Ordering_ID = do.Ordering_ID
-                                where o.Ordering_ID = @ordering_id)
-
-            update Ordering
-            set Ordering_Price = @ordering_price
-            where Ordering_ID = @ordering_id
-
-            fetch next from cur_cursor into @ordering_id
-        end
-    end
+			fetch next from cur_cursor into @ordering_id, @product_size_id
+	end
 
 	close cur_cursor
 	deallocate cur_cursor

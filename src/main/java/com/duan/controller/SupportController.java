@@ -15,7 +15,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.duan.entity.AccountEntity;
+import com.duan.entity.DetailOrderEntity;
+import com.duan.entity.FeedbackEntity;
 import com.duan.entity.SupportEntity;
+import com.duan.repository.AccountRepository;
 import com.duan.repository.SupportRepository;
 
 @RestController
@@ -24,6 +28,9 @@ public class SupportController {
 
 	@Autowired
 	private SupportRepository supportRepository;
+
+	@Autowired
+	private AccountRepository accountRepository;
 
 	// GET /support
 	@GetMapping
@@ -50,39 +57,77 @@ public class SupportController {
 		}
 	}
 
-	@PostMapping("/create")
-	public ResponseEntity<Map<String, Object>> createSupport(@RequestBody SupportEntity support) {
+	@PostMapping
+	public ResponseEntity<Map<String, Object>> createSupport(@RequestBody SupportEntity newSupport) {
 		Map<String, Object> res = new HashMap<>();
+
 		try {
-				SupportEntity createdSupport = supportRepository.save(support);
+			// Kiểm tra xem đã tồn tại chi tiết đơn hàng với supportID tương ứng chưa
+			Optional<SupportEntity> existingSupport = supportRepository.findById(newSupport.getSupportID());
+
+			if (existingSupport.isPresent()) {
+				// Lấy số điện thoại từ đối tượng newSupport
+				String accountPhone = newSupport.getAccountEntity().getAccountPhone();
+
+				// Kiểm tra xem Account_Phone đã tồn tại
+				boolean accountExists = accountExists(accountPhone);
+
+				if (!accountExists) {
+					res.put("status", false);
+					res.put("message", "Số điện thoại không tồn tại trong hệ thống");
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+				}
+
+				// Lưu chi tiết đơn hàng mới vào cơ sở dữ liệu
+				supportRepository.save(newSupport);
+
 				res.put("status", true);
-				res.put("data", createdSupport);
+				res.put("data", newSupport);
 				return ResponseEntity.ok(res);
-		} catch (Exception e) {
+			} else {
 				res.put("status", false);
-				res.put("message", "Đã có lỗi xảy ra trong quá trình tạo đơn hỗ trợ");
-				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+				res.put("message", "Support không tồn tại");
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
+			}
+		} catch (Exception e) {
+			res.put("status", false);
+			res.put("message", "Đã có lỗi xảy ra trong quá trình tạo thư hỗ trợ");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
 		}
 	}
 
+	public boolean accountExists(String accountPhone) {
+		Optional<AccountEntity> account = accountRepository.findById(accountPhone);
+		return account.isPresent();
+	}
 	// PUT /support/{id}
 
-	@PutMapping("/{id}")
-	public ResponseEntity<Map<String, Object>> updateSupport(@PathVariable int id, @RequestBody SupportEntity support) {
-		Optional<SupportEntity> optionalSupport = supportRepository.findById(id);
+	@PutMapping
+	public ResponseEntity<Map<String, Object>> updateSupport(@RequestBody SupportEntity updatedSupport)
+			throws InterruptedException {
 		Map<String, Object> res = new HashMap<>();
-		if (optionalSupport.isPresent()) {
-			SupportEntity existingSupport = optionalSupport.get();
-			// Update properties of the existing account
-			existingSupport.setSupportContent(support.getSupportContent());
-			existingSupport.setSupportReason(support.getSupportReason());
-			existingSupport.setSupportTitle(support.getSupportTitle());
+
+		Optional<SupportEntity> existingSupport = supportRepository.findById(updatedSupport.getSupportID());
+
+		if (existingSupport.isPresent()) {
+			SupportEntity supportToUpdate = existingSupport.get();
+
+			supportToUpdate.setSupportReason(updatedSupport.getSupportReason());
+			supportToUpdate.setSupportTitle(updatedSupport.getSupportTitle());
+			supportToUpdate.setSupportContent(updatedSupport.getSupportContent());
+			
+			// Lưu thư hỗ trợ đã được cập nhật vào cơ sở dữ liệu
+			supportRepository.updateSupport(updatedSupport.getSupportReason(), updatedSupport.getSupportTitle(),
+					updatedSupport.getSupportContent());
+
+			SupportEntity newFetchSupport = supportRepository.findById(updatedSupport.getSupportID()).get();
+
 			res.put("status", true);
-			res.put("data", existingSupport);
+			res.put("data", newFetchSupport);
 			return ResponseEntity.ok(res);
 		} else {
 			res.put("status", false);
-			res.put("message", "Đơn hỗ trợ không tồn tại");
+			res.put("message", "Thư hỗ trơ không tồn tại");
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
 		}
 	}

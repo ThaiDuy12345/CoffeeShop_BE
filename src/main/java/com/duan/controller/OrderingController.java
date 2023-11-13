@@ -7,10 +7,8 @@ import java.util.Optional;
 import java.util.List;
 
 
-import javax.swing.text.html.parser.Entity;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +25,6 @@ import com.duan.repository.DiscountRepository;
 import com.duan.repository.OrderingRepository;
 
 import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 
 @RestController
 @RequestMapping("/orderings")
@@ -41,9 +38,6 @@ public class OrderingController {
 
     @Autowired
     private DiscountRepository discountRepository;
-
-    @Autowired
-    private EntityManager entityManager;
 
     // GET /orders
     @GetMapping

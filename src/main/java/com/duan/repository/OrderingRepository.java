@@ -10,4 +10,5 @@ import com.duan.entity.OrderingEntity;
 
 public interface OrderingRepository extends JpaRepository<OrderingEntity, Integer>{
   List<OrderingEntity> findAllByOrderingStatusAndAccountEntity_AccountPhone(int OrderingStatus, String accountPhone);
+  List<OrderingEntity> findAllByAccountEntity_AccountPhone(String accountPhone);
 }

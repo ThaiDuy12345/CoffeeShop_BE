@@ -24,8 +24,6 @@ import com.duan.repository.AccountRepository;
 import com.duan.repository.DiscountRepository;
 import com.duan.repository.OrderingRepository;
 
-import jakarta.persistence.EntityManager;
-
 @RestController
 @RequestMapping("/orderings")
 public class OrderingController {
@@ -69,6 +67,22 @@ public class OrderingController {
         }catch(Exception e){
             res.put("status", false);
             res.put("message", "Đã có lỗi xảy ra trong quá trình lấy thông tin giỏ hàng");
+            return ResponseEntity.ok(res);
+        }
+    }
+
+    // GET /orders
+    @GetMapping("/getAllByAccount/{accountPhone}")
+    public ResponseEntity<Map<String, Object>> getAllByAccountPhone(@PathVariable String accountPhone) {
+        Map<String, Object> res = new HashMap<>();
+        try{
+            List<OrderingEntity> orders = orderingRepository.findAllByAccountEntity_AccountPhone(accountPhone);
+            res.put("status", true);
+            res.put("data", orders);
+            return ResponseEntity.ok(res);
+        }catch(Exception e){
+            res.put("status", false);
+            res.put("message", "Đã có lỗi xảy ra trong quá trình lấy thông tin lịch sử đơn hàng");
             return ResponseEntity.ok(res);
         }
     }

@@ -185,10 +185,11 @@ begin
 
         while @@fetch_status = 0
         begin
-            update Detail_Order
-            set Detail_Order_Sub_Total = Detail_Order_Product_Quantity * Product_Size.Product_Size_Price
-            from Product_Size
-            where Detail_Order.Product_Size_ID = Product_Size.Product_Size_ID
+            update do
+						set Detail_Order_Sub_Total = do.Detail_Order_Product_Quantity * ps.Product_Size_Price
+						from Detail_Order do
+						inner join Product_Size ps on do.Product_Size_ID = ps.Product_Size_ID
+						where do.Ordering_ID = @ordering_id
 
             set @ordering_price = (select sum(do.Detail_Order_Sub_Total) as total_price from Detail_Order do
                                 inner join Ordering o on o.Ordering_ID = do.Ordering_ID

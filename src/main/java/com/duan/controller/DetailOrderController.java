@@ -3,7 +3,6 @@ package com.duan.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,14 +50,32 @@ public class DetailOrderController {
             );
 
             if (existingDetailOrder.isPresent()) {
+                if(
+                    (detailOrderRepository
+                        .getSumProductInTheOrdering(existingDetailOrder.get().getDetailOrderId().getOrderingId())
+                        + newDetailOrder.getDetailOrderProductQuantity()) > 30
+                ){
+                    res.put("status", false);
+                    res.put("message", "Số lượng sản phẩm trong giỏ hàng chỉ có thể chứa tối đa 30 sản phẩm");
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+                }
+
                 detailOrderRepository.updateDetailOrder(
-                    newDetailOrder.getDetailOrderProductQuantity() + 1,
+                    existingDetailOrder.get().getDetailOrderProductQuantity() + newDetailOrder.getDetailOrderProductQuantity(),
                     newDetailOrder.getDetailOrderId().getOrderingId(),
                     newDetailOrder.getDetailOrderId().getProductSizeId()
                 );
                 res.put("status", true);
                 res.put("data", existingDetailOrder);
                 return ResponseEntity.ok(res);
+            }
+
+            if(
+                newDetailOrder.getDetailOrderProductQuantity() > 30
+            ){
+                res.put("status", false);
+                res.put("message", "Số lượng sản phẩm trong giỏ hàng chỉ có thể chứa tối đa 30 sản phẩm");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
             }
             
             // Lưu chi tiết đơn hàng mới vào cơ sở dữ liệu
@@ -93,6 +110,17 @@ public class DetailOrderController {
 
         if (existingDetailOrder.isPresent()) {
             DetailOrderEntity detailOrderToUpdate = existingDetailOrder.get();
+            
+            int currentQuantity = detailOrderRepository
+                .getSumProductInTheOrdering(existingDetailOrder.get().getDetailOrderId().getOrderingId())
+                - detailOrderToUpdate.getDetailOrderProductQuantity();
+            if(
+                currentQuantity + updatedDetailOrder.getDetailOrderProductQuantity() > 30
+            ){
+                res.put("status", false);
+                res.put("message", "Số lượng sản phẩm trong giỏ hàng chỉ có thể chứa tối đa 30 sản phẩm");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+            }
 
             // Cập nhật thông tin chi tiết đơn hàng với dữ liệu từ payload body
             detailOrderToUpdate.setDetailOrderProductQuantity(updatedDetailOrder.getDetailOrderProductQuantity());

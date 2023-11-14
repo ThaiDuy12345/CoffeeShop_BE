@@ -300,24 +300,24 @@ VALUES
 go
 
 -- Thêm dữ liệu vào bảng Order
-INSERT INTO Ordering (Ordering_Note, Account_Phone, Discount_ID)
-VALUES 
-  (N'Giao hàng nhanh', '+841234567891', 5),
-  (N'Giao hàng tiêu chuẩn', '+841234567891', 5),
-  (N'Khách hàng đặc biệt', '+841234567891', null),
-  (N'Giao hàng gấp', '+841234567891', null),
-  (N'Khách hàng VIP', '+841234567891', null);
-go
+-- INSERT INTO Ordering (Ordering_Note, Account_Phone, Discount_ID)
+-- VALUES 
+--   (N'Giao hàng nhanh', '+841234567891', 5),
+--   (N'Giao hàng tiêu chuẩn', '+841234567891', 5),
+--   (N'Khách hàng đặc biệt', '+841234567891', null),
+--   (N'Giao hàng gấp', '+841234567891', null),
+--   (N'Khách hàng VIP', '+841234567891', null);
+-- go
 
 -- Thêm dữ liệu vào bảng Detail_Order
-INSERT INTO Detail_Order (Detail_Order_Product_Quantity, Ordering_ID, Product_Size_ID)
-VALUES 
-  (1, 3, 2),
-  (1, 5, 3),
-  (3, 4, 3),
-  (1, 5, 4),
-  (2, 5, 5)
-go
+-- INSERT INTO Detail_Order (Detail_Order_Product_Quantity, Ordering_ID, Product_Size_ID)
+-- VALUES 
+--   (1, 3, 2),
+--   (1, 5, 3),
+--   (3, 4, 3),
+--   (1, 5, 4),
+--   (2, 5, 5)
+-- go
 
 -- Thêm dữ liệu vào bảng FeedBack
 INSERT INTO FeedBack (Product_ID, Account_Phone, Feedback_Comment, Feedback_Rate)

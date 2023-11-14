@@ -71,7 +71,9 @@ public class DetailOrderController {
             }
 
             if(
-                newDetailOrder.getDetailOrderProductQuantity() > 30
+                (detailOrderRepository
+                        .getSumProductInTheOrdering(newDetailOrder.getDetailOrderId().getOrderingId())
+                        + newDetailOrder.getDetailOrderProductQuantity()) > 30
             ){
                 res.put("status", false);
                 res.put("message", "Số lượng sản phẩm trong giỏ hàng chỉ có thể chứa tối đa 30 sản phẩm");
@@ -93,6 +95,7 @@ public class DetailOrderController {
             res.put("data", newFetchDetailOrder);
             return ResponseEntity.ok(res);
         } catch (Exception e) {
+            System.out.println(e);
             res.put("status", false);
             res.put("message", "Đã có lỗi xảy ra trong quá trình tạo hoá đơn chi tiết");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);

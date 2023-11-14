@@ -141,7 +141,9 @@ public class OrderingController {
                 }
             }
             // Cập nhật thông tin hóa đơn với dữ liệu từ payload body
-            
+            if(updatedOrder.getOrderingStatus() == 1 && orderToUpdate.getOrderingStatus() == 0){
+                orderToUpdate.setOrderingCreationDate(new Date());
+            }
             orderToUpdate.setOrderingStatus(updatedOrder.getOrderingStatus());
             orderToUpdate.setOrderingPaymentStatus(updatedOrder.getOrderingPaymentStatus());
             orderToUpdate.setOrderingShippingFee(updatedOrder.getOrderingShippingFee());
@@ -151,10 +153,6 @@ public class OrderingController {
                         : 
                     orderToUpdate.getOrderingNote()
             );
-
-            if(updatedOrder.getOrderingStatus() == 1 && orderToUpdate.getOrderingStatus() == 0){
-                orderToUpdate.setOrderingCreationDate(new Date());
-            }
 
             if(updatedOrder.getUpdatedByAccountEntity() != null){
                 orderToUpdate.setUpdatedByAccountEntity(

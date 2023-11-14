@@ -32,7 +32,10 @@ public interface DetailOrderRepository extends JpaRepository<DetailOrderEntity, 
 	void updateDetailOrder(int detailOrderProductQuantity, int orderingId, int productSizeId);
 
 	@Query(value = 
-		"SELECT SUM(do.Detail_Order_Product_Quantity) from Detail_Order do " + 
+		"SELECT CASE WHEN SUM(do.Detail_Order_Product_Quantity) IS NULL " +
+		"THEN 0 " +
+		"ELSE SUM(do.Detail_Order_Product_Quantity) END " + 
+		"FROM Detail_Order do " + 
 		"WHERE do.Ordering_ID = ?1"
 	, nativeQuery = true)
 	Integer getSumProductInTheOrdering(int orderingId);

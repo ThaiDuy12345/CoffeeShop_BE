@@ -103,10 +103,8 @@ Create table Ordering
 	-- null: Chưa thanh toán
 	-- 0: Thanh toán COD
 	-- 1: Đã Thanh toán qua Momo
-	-- 2: Đã Thanh toán qua ZaloPay
 	-- -1: Hoàn tiền thanh toán qua Momo
-	-- -2: Hoàn tiền thanh toán qua ZaloPay
-	Ordering_Payment_Status			int 			null				default(null)		check(Ordering_Payment_Status in (0, 1, -1, 2, -2)),
+	Ordering_Payment_Status			int 			null				default(null)		check(Ordering_Payment_Status in (null, 0, 1, -1)),
 	Ordering_Note					nvarchar(255)	null,
 	Ordering_Cancel_Description		nvarchar(255)	null,
 	Ordering_Approve_Description	nvarchar(255)	null,

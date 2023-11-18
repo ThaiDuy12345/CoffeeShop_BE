@@ -21,7 +21,6 @@ import lombok.Data;
 @Entity
 @Table(name = "Product")
 @Data
-@JsonIgnoreProperties({"hibernateLazyInitializer"})
 public class ProductEntity implements Serializable{
 	private static final long serialVersionUID = 1L;
 	@Id
@@ -51,6 +50,10 @@ public class ProductEntity implements Serializable{
     @ManyToOne
     @JoinColumn(name = "Category_ID", nullable = false)
     private CategoryEntity categoryEntity;
+    
+    @JsonIgnore
+    @OneToMany(mappedBy = "productEntity")
+    private List<FeedbackEntity> feedbackEntities;
 
     @JsonIgnore
     @OneToMany(mappedBy = "productEntity")

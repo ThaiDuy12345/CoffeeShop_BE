@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.duan.entity.SupportEntity;
+import com.duan.repository.AccountRepository;
 import com.duan.repository.SupportRepository;
 
 @RestController
@@ -24,6 +25,9 @@ public class SupportController {
 
 	@Autowired
 	private SupportRepository supportRepository;
+
+	@Autowired
+	private AccountRepository accountRepository;
 
 	// GET /support
 	@GetMapping
@@ -54,14 +58,19 @@ public class SupportController {
 	public ResponseEntity<Map<String, Object>> createSupport(@RequestBody SupportEntity support) {
 		Map<String, Object> res = new HashMap<>();
 		try {
-				SupportEntity createdSupport = supportRepository.save(support);
-				res.put("status", true);
-				res.put("data", createdSupport);
-				return ResponseEntity.ok(res);
-		} catch (Exception e) {
+			if(!accountRepository.existsByAccountPhone(support.getAccountEntity().getAccountPhone())){
 				res.put("status", false);
-				res.put("message", "Đã có lỗi xảy ra trong quá trình tạo đơn hỗ trợ");
-				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+				res.put("message", "Tài khoản không tồn tại");
+				return ResponseEntity.ok(res);
+			}
+			SupportEntity createdSupport = supportRepository.save(support);
+			res.put("status", true);
+			res.put("data", createdSupport);
+			return ResponseEntity.ok(res);
+		} catch (Exception e) {
+			res.put("status", false);
+			res.put("message", "Đã có lỗi xảy ra trong quá trình tạo đơn hỗ trợ");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
 		}
 	}
 
@@ -73,10 +82,7 @@ public class SupportController {
 		Map<String, Object> res = new HashMap<>();
 		if (optionalSupport.isPresent()) {
 			SupportEntity existingSupport = optionalSupport.get();
-			// Update properties of the existing account
-			existingSupport.setSupportContent(support.getSupportContent());
-			existingSupport.setSupportReason(support.getSupportReason());
-			existingSupport.setSupportTitle(support.getSupportTitle());
+			existingSupport.setSupportStatus(support.isSupportStatus());
 			res.put("status", true);
 			res.put("data", existingSupport);
 			return ResponseEntity.ok(res);

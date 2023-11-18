@@ -42,6 +42,14 @@ public class ProductController {
         return ResponseEntity.ok(res);
     }
 
+    @GetMapping("/withPrice")
+    public ResponseEntity<Map<String, Object>> getAllProductWithPrice() {
+    	Map<String, Object> res = new HashMap<>();
+        res.put("status", true);
+        res.put("data", productRepository.findAllProductWithMinPrice());
+        return ResponseEntity.ok(res);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Map<String, Object>> getProductById(@PathVariable int id) {
         Map<String, Object> res = new HashMap<>();

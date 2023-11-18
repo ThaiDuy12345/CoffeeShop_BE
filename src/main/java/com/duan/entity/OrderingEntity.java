@@ -57,7 +57,7 @@ public class OrderingEntity implements Serializable{
     @Column(name = "Ordering_Approve_Description", length = 255)
     private String orderingApproveDescription;
 
-    @Column(name = "Ordering_Payment_Status", columnDefinition = "default(null) check(Ordering_Payment_Status in (0, 1, -1, 2, -2))")
+    @Column(name = "Ordering_Payment_Status", columnDefinition = "default(null) check(Ordering_Payment_Status in (null, 0, 1, -1))")
     private Integer orderingPaymentStatus;
 
     @ManyToOne

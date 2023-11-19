@@ -41,4 +41,9 @@ public class SupportEntity implements Serializable {
     @ManyToOne
     @JoinColumn(name = "Account_Phone")
     private AccountEntity accountEntity;
+
+    public SupportEntity(){
+        this.supportCreationDate = new Date();
+        this.supportStatus = false;
+    }
 }

@@ -60,7 +60,22 @@ public class ProductController {
             return ResponseEntity.ok(res);
         } else {
             res.put("status", false);
-            res.put("message", "Danh mục không tồn tại");
+            res.put("message", "Sản phẩm không tồn tại");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
+        }
+    }
+
+    @GetMapping("/soldQuantity/{productId}")
+    public ResponseEntity<Map<String, Object>> getProductSoldQuantityById(@PathVariable int productId) {
+        Map<String, Object> res = new HashMap<>();
+        Optional<ProductEntity> product = productRepository.findById(productId);
+        if (product.isPresent()) {
+            res.put("status", true);
+            res.put("data", productRepository.getSoldQuantityByProductId(product.get().getProductId()));
+            return ResponseEntity.ok(res);
+        } else {
+            res.put("status", false);
+            res.put("message", "Sản phẩm không tồn tại");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
         }
     }

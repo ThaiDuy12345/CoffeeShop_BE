@@ -1,6 +1,7 @@
 package com.duan.controller;
 
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,9 +22,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.duan.entity.OrderingEntity;
+import com.duan.entity.SupportEntity;
 import com.duan.repository.AccountRepository;
 import com.duan.repository.DiscountRepository;
 import com.duan.repository.OrderingRepository;
+import com.duan.services.MailService;
+import com.duan.utils.EmailTemplate;
 
 @RestController
 @RequestMapping("/orderings")
@@ -37,6 +41,11 @@ public class OrderingController {
 
     @Autowired
     private DiscountRepository discountRepository;
+
+    @Autowired
+	private MailService mailService;
+
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
     // GET /orders
     @GetMapping
@@ -185,6 +194,25 @@ public class OrderingController {
 
             try {
                 orderToUpdate = orderingRepository.saveAndFlush(orderToUpdate);
+                switch (orderToUpdate.getOrderingStatus()) {
+                    case 1:
+                        sendSuccessfullyOrderingEmail(orderToUpdate);
+                        break;
+                    case 2:
+                        sendSuccessfullyApproveEmail(orderToUpdate);
+                        break;
+                    case 3:
+                        sendSuccessfullyHandOverToShipperEmail(orderToUpdate);
+                        break;
+                    case 4:
+                        sendSuccessfullyEmail(orderToUpdate);
+                        break;
+                    case -1:
+                        sendCancelOrder(orderToUpdate);
+                        break;
+                    default:
+                        break;
+                }
                 res.put("status", true);
                 res.put("data", orderToUpdate);
                 return ResponseEntity.ok(res);
@@ -224,4 +252,179 @@ public class OrderingController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
         }
     }
+
+    private void sendSuccessfullyOrderingEmail(OrderingEntity ordering){
+        String content = "<p>Xin chào,  </p>\n" 
+        +
+        "<p>Đơn hàng của bạn đã được đặt thành công<p>\n"
+        +
+        "<p>Xin vui lòng chờ tầm 15 phút để chúng tôi chuẩn bị đơn hàng của bạn</p>\n"
+        +
+        "<b>Thông tin đơn hàng:</b><br/><br/>" 
+        +
+        "<p>" 
+        +
+        "Mã đơn hàng: #" + ordering.getOrderingID() + "<br/>"
+        +
+        "Ngày đặt: " + dateFormat.format(ordering.getOrderingCreationDate()) + "<br/>"
+        +
+        "Tổng tiền đơn hàng: " + (String.format("%.0f", ordering.getOrderingPrice()) + "đ") + "<br/>"
+        +
+        "Tiền ship: " + (String.format("%.0f", ordering.getOrderingShippingFee())+ "đ") + "<br/>"
+        +
+        "Giảm giá: " + ((ordering.getDiscountEntity() != null && ordering.getDiscountEntity().getDiscountCode().length() > 0) ? (String.format("%.0f", ordering.getDiscountEntity().getDiscountAmount()) + "đ") : "0đ") + "<br/>"
+        +
+        "Tổng thanh toán: " + (String.format("%.0f", ordering.getOrderingTotalPrice()) + "đ")
+        +
+        "</p>\n"
+        +
+        "<p>Nếu bạn cần thêm thông tin hoặc có bất kỳ câu hỏi nào khác, vui lòng liên hệ với chúng tôi. Chúng tôi luôn sẵn lòng hỗ trợ bạn.</p>\n"
+        +
+        "<p>Chân thành cảm ơn bạn đã ủng hộ CoffeeShop. Chúc bạn một ngày tốt lành!</p><br/>\n"
+        +
+        "<p>Trân trọng, đội ngũ Coffee Shop</p>\n";
+        sendMailToClient(ordering, content);
+    }
+
+    private void sendSuccessfullyApproveEmail(OrderingEntity ordering){
+        String content = "<p>Xin chào,  </p>\n" 
+        +
+        "<p>Đơn hàng của bạn đã được duyệt và đang được chuẩn bị<p>\n"
+        +
+        "<b>Thông tin đơn hàng:</b><br/><br/>" 
+        +
+        "<p>" 
+        +
+        "Mã đơn hàng: #" + ordering.getOrderingID() + "<br/>"
+        +
+        "Ngày đặt: " + dateFormat.format(ordering.getOrderingCreationDate()) + "<br/>"
+        +
+        "Tổng tiền đơn hàng: " + (String.format("%.0f", ordering.getOrderingPrice()) + "đ") + "<br/>"
+        +
+        "Tiền ship: " + (String.format("%.0f", ordering.getOrderingShippingFee())+ "đ") + "<br/>"
+        +
+        "Giảm giá: " + ((ordering.getDiscountEntity() != null && ordering.getDiscountEntity().getDiscountCode().length() > 0) ? (String.format("%.0f", ordering.getDiscountEntity().getDiscountAmount()) + "đ") : "0đ") + "<br/>"
+        +
+        "Tổng thanh toán: " + (String.format("%.0f", ordering.getOrderingTotalPrice()) + "đ")
+        +
+        "</p>\n"
+        +
+        "<p>Nếu bạn cần thêm thông tin hoặc có bất kỳ câu hỏi nào khác, vui lòng liên hệ với chúng tôi. Chúng tôi luôn sẵn lòng hỗ trợ bạn.</p>\n"
+        +
+        "<p>Chân thành cảm ơn bạn đã ủng hộ CoffeeShop. Chúc bạn một ngày tốt lành!</p><br/>\n"
+        +
+        "<p>Trân trọng, đội ngũ Coffee Shop</p>\n";
+
+        sendMailToClient(ordering, content);
+    }
+
+    private void sendSuccessfullyHandOverToShipperEmail(OrderingEntity ordering){
+        String content = "<p>Xin chào,  </p>\n" 
+        +
+        "<p>Đơn hàng của bạn đã được bàn giao cho đội vận chuyển, xin hãy chú ý điện thoại để shipper liên lạc.<p>\n"
+        +
+        "<b>Thông tin đơn hàng:</b><br/><br/>" 
+        +
+        "<p>" 
+        +
+        "Mã đơn hàng: #" + ordering.getOrderingID() + "<br/>"
+        +
+        "Ngày đặt: " + dateFormat.format(ordering.getOrderingCreationDate()) + "<br/>"
+        +
+        "Tổng tiền đơn hàng: " + (String.format("%.0f", ordering.getOrderingPrice()) + "đ") + "<br/>"
+        +
+        "Tiền ship: " + (String.format("%.0f", ordering.getOrderingShippingFee())+ "đ") + "<br/>"
+        +
+        "Giảm giá: " + ((ordering.getDiscountEntity() != null && ordering.getDiscountEntity().getDiscountCode().length() > 0) ? (String.format("%.0f", ordering.getDiscountEntity().getDiscountAmount()) + "đ") : "0đ") + "<br/>"
+        +
+        "Tổng thanh toán: " + (String.format("%.0f", ordering.getOrderingTotalPrice()) + "đ")
+        +
+        "</p>\n"
+        +
+        "<p>Nếu bạn cần thêm thông tin hoặc có bất kỳ câu hỏi nào khác, vui lòng liên hệ với chúng tôi. Chúng tôi luôn sẵn lòng hỗ trợ bạn.</p>\n"
+        +
+        "<p>Chân thành cảm ơn bạn đã ủng hộ CoffeeShop. Chúc bạn một ngày tốt lành!</p><br/>\n"
+        +
+        "<p>Trân trọng, đội ngũ Coffee Shop</p>\n";
+
+        sendMailToClient(ordering, content);
+    }
+
+    private void sendSuccessfullyEmail(OrderingEntity ordering){
+        String content = "<p>Xin chào,  </p>\n" 
+        +
+        "<p>Đơn hàng của bạn đã được giao thành công.<p>\n"
+        +
+        "<b>Thông tin đơn hàng:</b><br/><br/>" 
+        +
+        "<p>" 
+        +
+        "Mã đơn hàng: #" + ordering.getOrderingID() + "<br/>"
+        +
+        "Ngày đặt: " + dateFormat.format(ordering.getOrderingCreationDate()) + "<br/>"
+        +
+        "Tổng tiền đơn hàng: " + (String.format("%.0f", ordering.getOrderingPrice()) + "đ") + "<br/>"
+        +
+        "Tiền ship: " + (String.format("%.0f", ordering.getOrderingShippingFee())+ "đ") + "<br/>"
+        +
+        "Giảm giá: " + ((ordering.getDiscountEntity() != null && ordering.getDiscountEntity().getDiscountCode().length() > 0) ? (String.format("%.0f", ordering.getDiscountEntity().getDiscountAmount()) + "đ") : "0đ") + "<br/>"
+        +
+        "Tổng thanh toán: " + (String.format("%.0f", ordering.getOrderingTotalPrice()) + "đ")
+        +
+        "</p>\n"
+        +
+        "<p>Nếu bạn cần thêm thông tin hoặc có bất kỳ câu hỏi nào khác, vui lòng liên hệ với chúng tôi. Chúng tôi luôn sẵn lòng hỗ trợ bạn.</p>\n"
+        +
+        "<p>Chân thành cảm ơn bạn đã ủng hộ CoffeeShop. Chúc bạn một ngày tốt lành!</p><br/>\n"
+        +
+        "<p>Trân trọng, đội ngũ Coffee Shop</p>\n";
+
+        sendMailToClient(ordering, content);
+    }
+
+    private void sendCancelOrder(OrderingEntity ordering){
+        String content = "<p>Xin chào,  </p>\n" 
+        +
+        "<p>Đơn hàng của bạn đã bị hủy<p>\n"
+        +
+        "<b>Thông tin đơn hàng:</b><br/><br/>"  
+        +
+        "<p>" 
+        +
+        "Mã đơn hàng: #" + ordering.getOrderingID() + "<br/>"
+        +
+        "Ngày đặt: " + dateFormat.format(ordering.getOrderingCreationDate()) + "<br/>"
+        +
+        "Tổng tiền đơn hàng: " + (String.format("%.0f", ordering.getOrderingPrice()) + "đ") + "<br/>"
+        +
+        "Tiền ship: " + (String.format("%.0f", ordering.getOrderingShippingFee())+ "đ") + "<br/>"
+        +
+        "Giảm giá: " + ((ordering.getDiscountEntity() != null && ordering.getDiscountEntity().getDiscountCode().length() > 0) ? (String.format("%.0f", ordering.getDiscountEntity().getDiscountAmount()) + "đ") : "0đ") + "<br/>"
+        +
+        "Tổng thanh toán: " + (String.format("%.0f", ordering.getOrderingTotalPrice()) + "đ")
+        +
+        "</p>\n"
+        +
+        "<p>Nếu bạn cần thêm thông tin hoặc có bất kỳ câu hỏi nào khác, vui lòng liên hệ với chúng tôi. Chúng tôi luôn sẵn lòng hỗ trợ bạn.</p>\n"
+        +
+        "<p>Chân thành cảm ơn bạn đã ủng hộ CoffeeShop. Chúc bạn một ngày tốt lành!</p><br/>\n"
+        +
+        "<p>Trân trọng, đội ngũ Coffee Shop</p>\n";
+
+        sendMailToClient(ordering, content);
+    }
+
+    private void sendMailToClient(OrderingEntity ordering, String content) {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				mailService.sendHTMLEmail(
+                    ordering.getAccountEntity().getAccountEmail(),
+                    "Thông báo về thư hỗ trợ đến từ hệ thống CoffeeShop",
+                    EmailTemplate.getEmailTemplate(content)
+                );
+			}
+		}).start();
+
+	}
 }

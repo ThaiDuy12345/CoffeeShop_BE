@@ -37,7 +37,7 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Integer>
 
     @Query(value = 
     "SELECT " +
-    "COALESCE(SUM(do.Detail_Order_Product_Quantity), 0) " +
+    "   COALESCE(SUM(do.Detail_Order_Product_Quantity), 0) " +
     "FROM Detail_Order do " +
     "INNER JOIN Ordering o ON o.Ordering_ID = do.Ordering_ID " +
     "INNER JOIN Product_Size ps ON do.Product_Size_ID = ps.Product_Size_ID " +

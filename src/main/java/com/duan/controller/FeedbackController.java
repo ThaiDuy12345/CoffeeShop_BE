@@ -138,7 +138,7 @@ public class FeedbackController {
 
       if(!(feedbackEntity.getFeedbackRate() >= 1 && feedbackEntity.getFeedbackRate() <= 5)){
         res.put("status", false);
-        res.put("message", "Số sao đánh giá phản hồi phải từ 1 tới 5 sao");
+        res.put("message", "Số sao đánh giá phải từ 1 tới 5 sao");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
       }
 

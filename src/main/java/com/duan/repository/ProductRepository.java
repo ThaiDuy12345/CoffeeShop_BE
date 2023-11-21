@@ -9,10 +9,6 @@ import com.duan.entity.CategoryEntity;
 import com.duan.entity.ProductEntity;
 import com.duan.entity.ProductEntityWithMinPrice;
 
-import jakarta.persistence.NamedNativeQueries;
-import jakarta.persistence.NamedNativeQuery;
-
-
 public interface ProductRepository extends JpaRepository<ProductEntity, Integer>{
 	List<ProductEntity> findByCategoryEntity(CategoryEntity category);
 	Boolean existsByProductId(Integer productId);

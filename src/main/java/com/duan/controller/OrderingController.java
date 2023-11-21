@@ -86,7 +86,7 @@ public class OrderingController {
     public ResponseEntity<Map<String, Object>> getAllByAccountPhone(@PathVariable String accountPhone) {
         Map<String, Object> res = new HashMap<>();
         try{
-            List<OrderingEntity> orders = orderingRepository.findAllByAccountEntity_AccountPhone(accountPhone);
+            List<OrderingEntity> orders = orderingRepository.findAllByAccountEntityAccountPhone(accountPhone);
             res.put("status", true);
             res.put("data", orders);
             return ResponseEntity.ok(res);

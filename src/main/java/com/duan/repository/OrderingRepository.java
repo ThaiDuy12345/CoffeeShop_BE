@@ -13,7 +13,7 @@ import jakarta.transaction.Transactional;
 
 public interface OrderingRepository extends JpaRepository<OrderingEntity, Integer>{
   List<OrderingEntity> findAllByOrderingStatusAndAccountEntity_AccountPhone(int OrderingStatus, String accountPhone);
-  List<OrderingEntity> findAllByAccountEntity_AccountPhone(String accountPhone);
+  List<OrderingEntity> findAllByAccountEntityAccountPhone(String accountPhone);
 
   @Transactional
   @Query(value = 

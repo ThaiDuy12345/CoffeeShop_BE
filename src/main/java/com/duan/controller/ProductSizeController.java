@@ -31,7 +31,7 @@ public class ProductSizeController {
     @GetMapping("/product/{productId}")
     public ResponseEntity<Map<String, Object>> getAllProductSizeByProductID(@PathVariable int productId) {
         Map<String, Object> res = new HashMap<>();
-        List<ProductSizeEntity> productSizes = productSizeRepository.findByProductEntity_ProductId(productId);
+        List<ProductSizeEntity> productSizes = productSizeRepository.findByProductEntityProductId(productId);
         res.put("status", true);
         res.put("data", productSizes);
         return ResponseEntity.ok(res);

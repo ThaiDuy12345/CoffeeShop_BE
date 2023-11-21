@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import com.duan.entity.ProductSizeEntity;
 
 public interface ProductSizeRepository extends JpaRepository<ProductSizeEntity, Integer> {
-	List<ProductSizeEntity> findByProductEntity_ProductId(int productId);
+	List<ProductSizeEntity> findByProductEntityProductId(int productId);
 
 	@Query(
 		value = 

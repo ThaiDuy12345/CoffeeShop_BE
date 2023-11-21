@@ -149,7 +149,7 @@ public class ProductController {
                 res.put("message", "Sản phẩm không thể được kích hoạt nếu chưa có ảnh");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
             }
-            if(product.isProductActive() == true && productSizeRepository.findByProductEntity_ProductId(id).isEmpty()){
+            if(product.isProductActive() == true && productSizeRepository.findByProductEntityProductId(id).isEmpty()){
                 res.put("status", false);
                 res.put("message", "Sản phẩm không thể được kích hoạt nếu chưa có các kích cỡ");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);

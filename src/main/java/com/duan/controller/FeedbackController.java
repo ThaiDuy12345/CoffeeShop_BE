@@ -156,7 +156,7 @@ public class FeedbackController {
       );
 
       res.put("status", true);
-      res.put("message", feedbackRepository.findById(feedbackEntity.getFeedbackId()).get());
+      res.put("data", feedbackRepository.findById(feedbackEntity.getFeedbackId()).get());
       return ResponseEntity.ok(res);
     }catch(Exception e){
       res.put("status", false);
@@ -194,14 +194,15 @@ public class FeedbackController {
       }
 
       feedbackRepository.updateNewFeedback(
-        feedbackEntity.getFeedbackComment(),
         feedbackEntity.getFeedbackRate(), 
+        feedbackEntity.getFeedbackComment(),
+        feedbackEntity.isFeedbackActive(),
         feedbackEntity.getFeedbackId().getProductId(), 
         feedbackEntity.getFeedbackId().getAccountPhone() 
       );
 
       res.put("status", true);
-      res.put("message", feedbackRepository.findById(feedbackEntity.getFeedbackId()).get());
+      res.put("data", feedbackRepository.findById(feedbackEntity.getFeedbackId()).get());
       return ResponseEntity.ok(res);
     }catch(Exception e){
       res.put("status", false);
@@ -224,6 +225,7 @@ public class FeedbackController {
       }
 
       res.put("status", true);
+      res.put("data", true);
       return ResponseEntity.ok(res);
     }catch(Exception e){
       res.put("status", false);

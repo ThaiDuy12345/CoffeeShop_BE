@@ -32,13 +32,14 @@ public interface FeedbackRepository extends JpaRepository<FeedbackEntity, Feedba
   @Modifying
   @Transactional
   @Query(value = 
-    "UPDATE feedback" +
-    "SET Feedback_Rate = ?1, Feedback_Comment = ?2 " + 
-    "WHERE Product_ID = ?3, Account_Phone like ?4, "
+    "UPDATE feedback " +
+    "SET Feedback_Rate = ?1, Feedback_Comment = ?2, Feedback_Active = ?3 " + 
+    "WHERE Product_ID = ?4 AND Account_Phone like ?5 "
   , nativeQuery = true)
   void updateNewFeedback(
-    String feedbackComment,
     Integer feedbackRate,
+    String feedbackComment,
+    Boolean feedbackActive,
     Integer productId,
     String accountPhone
   );

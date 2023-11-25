@@ -12,7 +12,7 @@ import com.duan.entity.ProductEntityWithMinPrice;
 public interface ProductRepository extends JpaRepository<ProductEntity, Integer>{
 	List<ProductEntity> findByCategoryEntity(CategoryEntity category);
 	Boolean existsByProductId(Integer productId);
-
+    Integer countByProductActive(Boolean productActive);
 	@Query(value =
     "SELECT  " +
     "   p.productId as productId, " + 

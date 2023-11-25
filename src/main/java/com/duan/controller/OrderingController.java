@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.duan.entity.DiscountEntity;
 import com.duan.entity.OrderingEntity;
 import com.duan.entity.SupportEntity;
 import com.duan.repository.AccountRepository;
@@ -81,6 +82,20 @@ public class OrderingController {
         }
     }
 
+    @GetMapping("/getAllByUpdatedByAdminAccount/{accountPhone}")
+    public ResponseEntity<Map<String, Object>> getAllByUpdatedByAdminAccount(@PathVariable String accountPhone) {
+        Map<String, Object> res = new HashMap<>();
+        try{
+            List<OrderingEntity> orders = orderingRepository.findAllByUpdatedByAccountEntityAccountPhone(accountPhone);
+            res.put("status", true);
+            res.put("data", orders);
+            return ResponseEntity.ok(res);
+        }catch(Exception e){
+            res.put("status", false);
+            res.put("message", "Đã có lỗi xảy ra trong quá trình lấy thông tin lịch sử đơn hàng");
+            return ResponseEntity.ok(res);
+        }
+    }
     // GET /orders
     @GetMapping("/getAllByAccount/{accountPhone}")
     public ResponseEntity<Map<String, Object>> getAllByAccountPhone(@PathVariable String accountPhone) {
@@ -149,10 +164,26 @@ public class OrderingController {
                     return ResponseEntity.status(HttpStatus.FORBIDDEN).body(res);
                 }
             }
-            // Cập nhật thông tin hóa đơn với dữ liệu từ payload body
+            // Đặt lại ngày tạo đơn nếu người dùng vừa đặt hàng
             if(updatedOrder.getOrderingStatus() == 1 && orderToUpdate.getOrderingStatus() == 0){
                 orderToUpdate.setOrderingCreationDate(new Date());
             }
+            if(orderToUpdate.getDiscountEntity() == null && updatedOrder.getDiscountEntity() != null){
+                DiscountEntity discount = discountRepository.findById(updatedOrder.getDiscountEntity().getDiscountId()).get();
+                if(discount.getDiscountExpiredDate().before(new Date())){
+                    res.put("status", false);
+                    res.put("message", "Mã giảm giá đã hết hạn, xin vui lòng chọn mã giảm giá khác");
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(res);    
+                }
+                
+                if(discount.getDiscountMinimumOrderPrice().compareTo(orderToUpdate.getOrderingPrice()) == 1){
+                    res.put("status", false);
+                    res.put("message", "Đơn hàng của bạn không đạt đủ điều kiện để sử dụng mã giảm giá, xin vui lòng chọn mã giảm giá khác");
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(res);    
+                }
+                
+            }
+            // Cập nhật thông tin hóa đơn với dữ liệu từ payload body
             orderToUpdate.setOrderingStatus(updatedOrder.getOrderingStatus());
             orderToUpdate.setOrderingPaymentStatus(updatedOrder.getOrderingPaymentStatus());
             orderToUpdate.setOrderingShippingFee(updatedOrder.getOrderingShippingFee());

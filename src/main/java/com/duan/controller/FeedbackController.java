@@ -210,7 +210,7 @@ public class FeedbackController {
     }
   }
 
-  @DeleteMapping
+  @DeleteMapping("/{productId}/{accountPhone}")
   public ResponseEntity<Map<String, Object>> deleteFeedback(@RequestParam Integer productId, @RequestParam String accountPhone){
     Map<String, Object> res = new HashMap<String, Object>();
     try{

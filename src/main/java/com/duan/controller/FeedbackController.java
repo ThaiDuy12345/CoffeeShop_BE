@@ -85,8 +85,13 @@ public class FeedbackController {
 	public ResponseEntity<Map<String, Object>> getFeedbackByProductAndAccount(@PathVariable Integer productId, @PathVariable String accountPhone) {
     Map<String, Object> res = new HashMap<>();
     try{
+      if(feedbackRepository.findById(new FeedbackId(productId, accountPhone)).isEmpty()){
+        res.put("status", true);
+        res.put("data", null);
+        return ResponseEntity.ok(res);
+      }
       res.put("status", true);
-      res.put("data", feedbackRepository.findAllByFeedbackIdProductIdAndFeedbackIdAccountPhone(productId, accountPhone));
+      res.put("data", feedbackRepository.findById(new FeedbackId(productId, accountPhone)).get());
       return ResponseEntity.ok(res);
     }catch(Exception e){
       res.put("status", false);
@@ -210,28 +215,4 @@ public class FeedbackController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
     }
   }
-
-  @DeleteMapping("/{productId}/{accountPhone}")
-  public ResponseEntity<Map<String, Object>> deleteFeedback(@RequestParam Integer productId, @RequestParam String accountPhone){
-    Map<String, Object> res = new HashMap<String, Object>();
-    try{
-      FeedbackId feedbackId = new FeedbackId();
-      feedbackId.setProductId(productId);
-      feedbackId.setAccountPhone(accountPhone);
-      if(!feedbackRepository.existsById(feedbackId)){
-        res.put("status", false);
-        res.put("message", "Đánh giá không tồn tại trong hệ thống");
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
-      }
-
-      res.put("status", true);
-      res.put("data", true);
-      return ResponseEntity.ok(res);
-    }catch(Exception e){
-      res.put("status", false);
-      res.put("message", "Đã có lỗi xảy ra trong quá trình xóa đánh giá");
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
-    }
-  }
-
 }

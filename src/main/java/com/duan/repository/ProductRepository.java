@@ -38,7 +38,7 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Integer>
     "INNER JOIN Ordering o ON o.Ordering_ID = do.Ordering_ID " +
     "INNER JOIN Product_Size ps ON do.Product_Size_ID = ps.Product_Size_ID " +
     "INNER JOIN Product p ON p.Product_ID = ps.Product_ID " +
-    "WHERE p.Product_ID  = ?1 AND o.Ordering_Status IN (1, 2, 3, 4)" 
+    "WHERE p.Product_ID  = ?1 AND o.Ordering_Status = 4" 
     , nativeQuery = true)
     Integer getSoldQuantityByProductId(Integer productId);
 }

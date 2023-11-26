@@ -26,7 +26,7 @@ public interface OrderingRepository extends JpaRepository<OrderingEntity, Intege
     "INNER JOIN Detail_Order do ON do.Ordering_ID = o.Ordering_ID " +
     "INNER JOIN Product_Size ps ON ps.Product_Size_ID = do.Product_Size_ID " +
     "INNER JOIN Product p ON p.Product_ID = ps.Product_ID " +
-    "WHERE p.Product_ID = ?1 AND a.Account_Phone like ?2"
+    "WHERE p.Product_ID = ?1 AND a.Account_Phone like ?2 AND o.Ordering_Status = 4"
   , nativeQuery = true)
   Integer countOrderingQuantityFromAnAccountAndProduct(Integer productId, String accountPhone);
 }

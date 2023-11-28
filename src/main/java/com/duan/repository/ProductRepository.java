@@ -41,4 +41,20 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Integer>
     "WHERE p.Product_ID  = ?1 AND o.Ordering_Status = 4" 
     , nativeQuery = true)
     Integer getSoldQuantityByProductId(Integer productId);
+    
+    //hiếu
+    @Query(value =
+            "SELECT " +
+            "   p, " +
+            "   COALESCE(SUM(do.Detail_Order_Product_Quantity), 0) as soldQuantity " +
+            "FROM Detail_Order do " +
+            "INNER JOIN Ordering o ON o.Ordering_ID = do.Ordering_ID " +
+            "INNER JOIN Product_Size ps ON do.Product_Size_ID = ps.Product_Size_ID " +
+            "INNER JOIN Product p ON p.Product_ID = ps.Product_ID " +
+            "WHERE o.Ordering_Status = 4 " +
+            "GROUP BY p " +
+            "ORDER BY soldQuantity DESC"
+            , nativeQuery = true)
+    List<Object[]> findAllProductOrderBySoldQuantity();
+
 }

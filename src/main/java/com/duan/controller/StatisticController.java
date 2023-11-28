@@ -1,6 +1,8 @@
 package com.duan.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.duan.entity.ProductEntity;
 import com.duan.repository.AccountRepository;
 import com.duan.repository.FeedbackRepository;
 import com.duan.repository.OrderingRepository;
@@ -58,5 +61,20 @@ public class StatisticController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
     }
     
+  }
+  @GetMapping("/products/sold-quantity")
+  public ResponseEntity<List<ProductEntity>> getAllProductOrderBySoldQuantity() {
+      List<Object[]> results = productRepository.findAllProductOrderBySoldQuantity();
+      List<ProductEntity> response = new ArrayList<>();
+
+      for (Object[] result : results) {
+          ProductEntity product = (ProductEntity) result[0];
+          Integer soldQuantity = (Integer) result[1];
+
+          product.setSoldQuantity(soldQuantity);
+          response.add(product);
+      }
+
+      return ResponseEntity.ok(response);
   }
 }

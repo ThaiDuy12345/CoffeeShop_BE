@@ -62,4 +62,8 @@ public class ProductEntity implements Serializable{
     public ProductEntity() {
         this.productCreationDate = new Date();
     }
+ // Trong ProductEntity
+    @Column(name = "Sold_Quantity", nullable = false, columnDefinition = "int default 0")
+    private Integer soldQuantity;
+
 }

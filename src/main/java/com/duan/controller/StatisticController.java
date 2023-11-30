@@ -57,6 +57,33 @@ public class StatisticController {
       res.put("message", "Đã xảy ra lỗi trong quá trình lấy dữ liệu");  
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
     }
-    
+  }
+
+  @GetMapping("/productBySoldQuantity")
+  public ResponseEntity<Map<String, Object>> getProductBySoldQuantity() {
+    Map<String, Object> res = new HashMap<String, Object>();
+    try{
+      res.put("status", true);
+      res.put("data", productRepository.getProductStatisticsBySoldQuantity());
+      return ResponseEntity.ok(res);
+    }catch(Exception e){
+      res.put("status", false);
+      res.put("message", "Đã có lỗi xảy ra trong quá trình lấy dữ liệu");
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+    }
+  }
+
+  @GetMapping("/productByFeedbackQuantity")
+  public ResponseEntity<Map<String, Object>> getProductByFeedbackQuantity() {
+    Map<String, Object> res = new HashMap<String, Object>();
+    try{
+      res.put("status", true);
+      res.put("data", productRepository.getProductStatisticsByFeedbackQuantity());
+      return ResponseEntity.ok(res);
+    }catch(Exception e){
+      res.put("status", false);
+      res.put("message", "Đã có lỗi xảy ra trong quá trình lấy dữ liệu");
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+    }
   }
 }

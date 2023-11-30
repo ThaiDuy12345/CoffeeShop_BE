@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.duan.entity.CategoryEntity;
 import com.duan.entity.ProductEntity;
+import com.duan.entity.ProductEntityStatistic;
+import com.duan.entity.ProductEntityStatistic2;
 import com.duan.entity.ProductEntityWithMinPrice;
 
 public interface ProductRepository extends JpaRepository<ProductEntity, Integer>{
@@ -41,4 +43,33 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Integer>
     "WHERE p.Product_ID  = ?1 AND o.Ordering_Status = 4" 
     , nativeQuery = true)
     Integer getSoldQuantityByProductId(Integer productId);
+
+    @Query(value = 
+    "SELECT " +
+    "    p.Product_ID as productId, " +
+    "    p.Product_Name as productName, " +
+    "    p.Product_Active as productActive, " +
+    "    COALESCE(SUM(do.Detail_Order_Product_Quantity), 0) as productSoldQuantity " +
+    "FROM Detail_Order do " +
+    "INNER JOIN Ordering o ON o.Ordering_ID = do.Ordering_ID " +
+    "INNER JOIN Product_Size ps ON do.Product_Size_ID = ps.Product_Size_ID " +
+    "INNER JOIN Product p ON p.Product_ID = ps.Product_ID " +
+    "WHERE o.Ordering_Status = 4 " +
+    "GROUP BY p.Product_ID, p.Product_Name, p.Product_Active " +
+    "ORDER BY productSoldQuantity DESC "
+    , nativeQuery = true)
+    List<ProductEntityStatistic> getProductStatisticsBySoldQuantity();
+
+    @Query(value = 
+    "SELECT " +
+    "    p.Product_ID as productId, " +
+    "    p.Product_Name as productName, " +
+    "    p.Product_Active as productActive, " +
+    "    COALESCE(COUNT(fb.Product_Id), 0) as productFeedbackQuantity " +
+    "FROM Feedback fb " +
+    "INNER JOIN Product p ON p.Product_ID = fb.Product_ID " +
+    "GROUP BY p.Product_ID, p.Product_Name, p.Product_Active " +
+    "ORDER BY productFeedbackQuantity DESC "
+    , nativeQuery = true)
+    List<ProductEntityStatistic2> getProductStatisticsByFeedbackQuantity();
 }

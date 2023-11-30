@@ -1,5 +1,8 @@
 package com.duan.controller;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -19,7 +22,7 @@ import com.duan.services.MailService;
 import com.duan.utils.EmailTemplate;
 
 @RestController
-@RequestMapping("/forgotPassword")
+@RequestMapping("/forgotPasswords")
 public class ForgotPasswordController {
   @Autowired
   AccountRepository accountRepository;
@@ -46,11 +49,11 @@ public class ForgotPasswordController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
       }
 
-      Integer randomNumber = getRandomNumber();
+      String randomNumber = getRandomNumber();
       sendEmail(randomNumber, account);
 
       res.put("status", true);
-      res.put("data", randomNumber);
+      res.put("data", encode(randomNumber.toString()));
       return ResponseEntity.ok(res);
     }catch(Exception e){
       res.put("status", false);
@@ -59,7 +62,7 @@ public class ForgotPasswordController {
     }
   }
 
-  private void sendEmail(Integer number, AccountEntity account){
+  private void sendEmail(String number, AccountEntity account){
     new Thread(new Runnable() {
       @Override
       public void run(){
@@ -71,8 +74,11 @@ public class ForgotPasswordController {
       }
     }).start();
   }
+  private static String encode(String input) throws NoSuchAlgorithmException {
+    return Base64.getEncoder().encodeToString(input.getBytes());
+  }
 
-  private Integer getRandomNumber() {
+  private String getRandomNumber() {
     Random random = new Random();
 
     // Tạo một số ngẫu nhiên từ 0 đến 999999
@@ -80,11 +86,11 @@ public class ForgotPasswordController {
 
     // Cắt số ngẫu nhiên thành 6 chữ số
     String number = String.format("%06d", randomNumber);
-    return Integer.parseInt(number);
+    return number;
 
   }
 
-  private String getContent(Integer number) {
+  private String getContent(String number) {
     return "<p>Xin chào,  </p>\n" 
       +
       "<p>Đã có một ai đó yêu cầu khôi phục mật khẩu, nhưng trước hết cần nhập mã xác nhận:<p>\n"

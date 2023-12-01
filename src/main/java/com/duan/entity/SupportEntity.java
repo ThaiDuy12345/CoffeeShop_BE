@@ -31,8 +31,8 @@ public class SupportEntity implements Serializable {
 
     @Column(name = "Support_Content", nullable = false)
     private String supportContent;
-
-    @Column(name = "Support_Creation_date", nullable = false, columnDefinition = "datetime2 default CURRENT_TIMESTAMP")
+    
+    @Column(name = "Support_Creation_Date", nullable = false, columnDefinition = "datetime2 default CURRENT_TIMESTAMP")
     private Date supportCreationDate;
 
     @Column(name = "Support_Status", nullable = false)

@@ -45,7 +45,7 @@ Create table Support
 	Support_Reason					nvarchar(100)	not null,
 	Support_Title					nvarchar(100)	not null, 
 	Support_Content					nvarchar(max)	not null, 
-	Support_Creation_date			datetime2		not null			default(GETDATE()), 
+	Support_Creation_Date			datetime2		not null			default(GETDATE()), 
 	Support_Status					bit				not null			default(0),
 	Account_Phone					varchar(13)		not null			references Account(Account_Phone)
 )

@@ -1,13 +1,14 @@
 package com.duan.repository;
 
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import com.duan.entity.OrderingEntity;
+import com.duan.entity.OrderingEntityStatistic;
 
 import jakarta.transaction.Transactional;
 
@@ -29,4 +30,18 @@ public interface OrderingRepository extends JpaRepository<OrderingEntity, Intege
     "WHERE p.Product_ID = ?1 AND a.Account_Phone like ?2 AND o.Ordering_Status = 4"
   , nativeQuery = true)
   Integer countOrderingQuantityFromAnAccountAndProduct(Integer productId, String accountPhone);
+
+  @Query(value =
+  "SELECT " +
+  "  o.Ordering_Creation_Date as date, " +
+  "  COALESCE(COUNT(*), 0) as orderingQuantity " +
+  "FROM Ordering o " +
+  "WHERE " +
+  "  o.Ordering_Status = 4 AND " +
+  "  o.Ordering_Creation_Date >= ?1 AND " +
+  "  o.Ordering_Creation_Date <=  ?2 " +
+  "GROUP BY o.Ordering_Creation_Date " +
+  "ORDER BY o.Ordering_Creation_Date ASC"
+  , nativeQuery = true)
+  List<OrderingEntityStatistic> getOrderingStatisticsByDate(Date startDate, Date endDate);
 }

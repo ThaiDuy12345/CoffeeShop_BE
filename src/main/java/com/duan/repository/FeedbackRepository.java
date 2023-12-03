@@ -1,5 +1,6 @@
 package com.duan.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -7,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import com.duan.entity.FeedbackEntity;
+import com.duan.entity.FeedbackEntityStatistic;
 import com.duan.entity.FeedbackId;
 
 import jakarta.transaction.Transactional;
@@ -43,4 +45,17 @@ public interface FeedbackRepository extends JpaRepository<FeedbackEntity, Feedba
     Integer productId,
     String accountPhone
   );
+
+  @Query(value = 
+  "SELECT " +
+  "  f.Feedback_Creation_Date as date, " +
+  "  COUNT(*) as feedbackQuantity " +
+  "FROM Feedback f " +
+  "WHERE " +
+  "  f.Feedback_Creation_Date >= ?1 AND " +
+  "  f.Feedback_Creation_Date <= ?2 " +
+  "GROUP BY f.Feedback_Creation_Date " +
+  "ORDER BY f.Feedback_Creation_Date ASC"
+  , nativeQuery = true)
+  List<FeedbackEntityStatistic> getFeedbackStatisticsByDate(Date startDate, Date endDate);
 }

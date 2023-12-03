@@ -1,5 +1,6 @@
 package com.duan.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,6 +10,7 @@ import com.duan.entity.CategoryEntity;
 import com.duan.entity.ProductEntity;
 import com.duan.entity.ProductEntityStatistic;
 import com.duan.entity.ProductEntityStatistic2;
+import com.duan.entity.ProductEntityStatistic3;
 import com.duan.entity.ProductEntityWithMinPrice;
 
 public interface ProductRepository extends JpaRepository<ProductEntity, Integer>{
@@ -72,4 +74,19 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Integer>
     "ORDER BY productFeedbackQuantity DESC "
     , nativeQuery = true)
     List<ProductEntityStatistic2> getProductStatisticsByFeedbackQuantity();
+
+    @Query(value = 
+    "SELECT  " +
+    "   o.Ordering_Creation_Date as date, " +
+    "   COALESCE(SUM(do.Detail_Order_Product_Quantity), 0) as productSoldQuantity " +
+    "FROM Detail_Order do " +
+    "INNER JOIN Ordering o ON o.Ordering_ID = do.Ordering_ID " +
+    "INNER JOIN Product_Size ps ON do.Product_Size_ID = ps.Product_Size_ID " +
+    "INNER JOIN Product p ON p.Product_ID = ps.Product_ID " +
+    "WHERE o.Ordering_Status = 4 AND o.Ordering_Creation_Date >= ?1 AND  " +
+    "o.Ordering_Creation_Date <=  ?2 " +
+    "GROUP BY o.Ordering_Creation_Date " +
+    "ORDER BY o.Ordering_Creation_Date ASC"
+    , nativeQuery = true)
+    List<ProductEntityStatistic3> getProductStatisticsBySoldQuantityAndDate(Date startDate, Date endDate);
 }

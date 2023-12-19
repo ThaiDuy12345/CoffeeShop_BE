@@ -51,9 +51,13 @@ public class ProductSizeController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
             }
 
-            if(productSize.getProductSizePrice().compareTo(new BigDecimal(1000000)) > 0){
+            if(
+                productSize.getProductSizePrice().compareTo(new BigDecimal(1000000)) > 0
+                    ||
+                productSize.getProductSizePrice().compareTo(new BigDecimal(10000)) < 0
+            ){
                 res.put("status", false);
-                res.put("message", "Gía thành kích cỡ không được vượt quá 1.000.000VNĐ");
+                res.put("message", "Giá thành kích cỡ chỉ được phép giao động từ 10.000VND tới 1.000.000VND");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
             }
 
@@ -80,6 +84,15 @@ public class ProductSizeController {
         Optional<ProductSizeEntity> optionalProductSize = productSizeRepository.findById(productSizeId);
         Map<String, Object> res = new HashMap<>();
         if (optionalProductSize.isPresent()) {
+            if(
+                productSize.getProductSizePrice().compareTo(new BigDecimal(1000000)) > 0
+                    ||
+                productSize.getProductSizePrice().compareTo(new BigDecimal(10000)) < 0
+            ){
+                res.put("status", false);
+                res.put("message", "Giá thành kích cỡ chỉ được phép giao động từ 10.000VND tới 1.000.000VND");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+            }
             ProductSizeEntity existingProductSize = optionalProductSize.get();
             existingProductSize.setProductSize(productSize.getProductSize());
             existingProductSize.setProductSizePrice(productSize.getProductSizePrice());

@@ -26,7 +26,6 @@ public class AccountController {
     @Autowired
 	private AccountRepository accountRepository;
 
- // GET /accounts
     @GetMapping
     public ResponseEntity<Map<String, Object>> getAllAccounts() {
         Map<String, Object> res = new HashMap<>();
@@ -34,7 +33,7 @@ public class AccountController {
         res.put("data", accountRepository.findAll());
         return ResponseEntity.ok(res);
     }
- // GET /accounts/{phone}
+
     @GetMapping("/{phone}")
     public ResponseEntity<Map<String, Object>> getAccountByPhone(@PathVariable String phone) {
         Map<String, Object> res = new HashMap<>();
@@ -45,12 +44,11 @@ public class AccountController {
             return ResponseEntity.ok(res);
         } else {
             res.put("status", false);
-            res.put("message", "Tài khoản không tồn tại");
+            res.put("message", "Tài khoản không tồn tại"); 
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
         }
     }
 
-    // GET /accounts/{email}
     @GetMapping("/email/{email}")
     public ResponseEntity<Map<String, Object>> getAccountByEmail(@PathVariable String email) {
         Map<String, Object> res = new HashMap<>();

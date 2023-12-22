@@ -43,7 +43,7 @@ public class OrderingController {
     private DiscountRepository discountRepository;
 
     @Autowired
-	private MailService mailService;
+    private MailService mailService;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
@@ -127,15 +127,15 @@ public class OrderingController {
         }
     }
 
- // PUT /orders/{id}
+    // PUT /orders/{id}
     @PutMapping("/{id}")
-	public ResponseEntity<Map<String, Object>> updateOrder(@PathVariable int id, @RequestBody OrderingEntity updatedOrder) {
+    public ResponseEntity<Map<String, Object>> updateOrder(@PathVariable int id, @RequestBody OrderingEntity updatedOrder) {
         Optional<OrderingEntity> existingOrder = orderingRepository.findById(id);
         Map<String, Object> res = new HashMap<>();
 
         if (existingOrder.isPresent()) {
-        	OrderingEntity orderToUpdate = existingOrder.get();
-            
+            OrderingEntity orderToUpdate = existingOrder.get();
+
             // Kiểm tra coi thử nhân viên duyệt đơn có đúng với nhân duyệt đơn trước đó đã duyệt hoặc là admin
             if (
                 orderToUpdate.getUpdatedByAccountEntity() != null
@@ -154,7 +154,8 @@ public class OrderingController {
                             orderToUpdate.getUpdatedByAccountEntity().getAccountPhone().equals(
                                 updatedOrder.getUpdatedByAccountEntity().getAccountPhone()
                             )
-                        ) ||
+                        ) 
+                            ||
                         accountRepository.findById(updatedOrder.getUpdatedByAccountEntity().getAccountPhone()).get().getAccountRole() == 0
                     )
                 ) {
@@ -174,13 +175,13 @@ public class OrderingController {
                     res.put("message", "Mã giảm giá đã hết hạn, xin vui lòng chọn mã giảm giá khác");
                     return ResponseEntity.status(HttpStatus.FORBIDDEN).body(res);    
                 }
-                
+
                 if(discount.getDiscountMinimumOrderPrice().compareTo(orderToUpdate.getOrderingPrice()) == 1){
                     res.put("status", false);
                     res.put("message", "Đơn hàng của bạn không đạt đủ điều kiện để sử dụng mã giảm giá, xin vui lòng chọn mã giảm giá khác");
                     return ResponseEntity.status(HttpStatus.FORBIDDEN).body(res);    
                 }
-                
+
             }
             // Cập nhật thông tin hóa đơn với dữ liệu từ payload body
             orderToUpdate.setOrderingStatus(updatedOrder.getOrderingStatus());
@@ -188,9 +189,9 @@ public class OrderingController {
             orderToUpdate.setOrderingShippingFee(updatedOrder.getOrderingShippingFee());
             orderToUpdate.setOrderingNote(
                 updatedOrder.getOrderingNote() != null ? 
-                    updatedOrder.getOrderingNote() 
-                        : 
-                    orderToUpdate.getOrderingNote()
+                updatedOrder.getOrderingNote() 
+                : 
+                orderToUpdate.getOrderingNote()
             );
 
             if(updatedOrder.getUpdatedByAccountEntity() != null){
@@ -208,40 +209,40 @@ public class OrderingController {
                     ).get()
                 );
             }
-            
+
             orderToUpdate.setOrderingCancelDescription(
                 updatedOrder.getOrderingCancelDescription() != null ? 
-                    updatedOrder.getOrderingCancelDescription() 
-                        : 
-                    orderToUpdate.getOrderingCancelDescription()
+                updatedOrder.getOrderingCancelDescription() 
+                : 
+                orderToUpdate.getOrderingCancelDescription()
             );
             orderToUpdate.setOrderingApproveDescription(
                 updatedOrder.getOrderingApproveDescription() != null ? 
-                    updatedOrder.getOrderingApproveDescription() 
-                        : 
-                    orderToUpdate.getOrderingApproveDescription()
+                updatedOrder.getOrderingApproveDescription() 
+                : 
+                orderToUpdate.getOrderingApproveDescription()
             );
 
             try {
                 orderToUpdate = orderingRepository.saveAndFlush(orderToUpdate);
                 switch (orderToUpdate.getOrderingStatus()) {
                     case 1:
-                        sendSuccessfullyOrderingEmail(orderToUpdate);
-                        break;
+                    sendSuccessfullyOrderingEmail(orderToUpdate);
+                    break;
                     case 2:
-                        sendSuccessfullyApproveEmail(orderToUpdate);
-                        break;
+                    sendSuccessfullyApproveEmail(orderToUpdate);
+                    break;
                     case 3:
-                        sendSuccessfullyHandOverToShipperEmail(orderToUpdate);
-                        break;
+                    sendSuccessfullyHandOverToShipperEmail(orderToUpdate);
+                    break;
                     case 4:
-                        sendSuccessfullyEmail(orderToUpdate);
-                        break;
+                    sendSuccessfullyEmail(orderToUpdate);
+                    break;
                     case -1:
-                        sendCancelOrder(orderToUpdate);
-                        break;
+                    sendCancelOrder(orderToUpdate);
+                    break;
                     default:
-                        break;
+                    break;
                 }
                 res.put("status", true);
                 res.put("data", orderToUpdate);
@@ -445,16 +446,16 @@ public class OrderingController {
     }
 
     private void sendMailToClient(OrderingEntity ordering, String content) {
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				mailService.sendHTMLEmail(
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                mailService.sendHTMLEmail(
                     ordering.getAccountEntity().getAccountEmail(),
                     "Thông báo về thư hỗ trợ đến từ hệ thống CoffeeShop",
                     EmailTemplate.getEmailTemplate(content)
                 );
-			}
-		}).start();
+            }
+            }).start();
 
-	}
+    }
 }
